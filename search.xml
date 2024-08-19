@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>关于Python3如何实现base64编码解码</title>
+    <url>/2024/04/19/%E5%85%B3%E4%BA%8Epython3%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0base64%E7%BC%96%E7%A0%81%E8%A7%A3%E7%A0%81/</url>
+    <content><![CDATA[<p><img src="https://s2.loli.net/2024/04/19/B2j1kgEqVI8FYbu.png" alt="image-20240419114231543.png"></p>
+<p>AttributeError: ‘bytes’ object has no attribute ‘encode’是：“字节”对象没有属性的编码的意思。</p>
+<p>很明显，是编码格式的问题。</p>
+<p>使用.encode(“base64”)在python3中会报错。b64encode函数的参数为byte类型，而python3中字符都是unicode编码，所以在进行base64编码之前必须先转码。base64生成的编码都是ascii字符。</p>
+<p>解一般的pwn题目的方式。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">payload_ <span class="token operator">=</span> <span class="token punctuation">(</span>base64<span class="token punctuation">.</span>b64encode<span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>源码</p>
+<p><img src="https://s2.loli.net/2024/04/19/SPQ7A8uUGEICTZe.png" alt="image-20240419120225364.png"></p>
+<p>执行结果</p>
+<p><img src="https://s2.loli.net/2024/04/19/pUEQFSbCgWKDiLo.png" alt="image-20240419120244744.png"></p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>Python</tag>
+        <tag>Binary</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>关于One_gadget</title>
     <url>/2024/04/19/%E5%85%B3%E4%BA%8Eone-gadget/</url>
     <content><![CDATA[<h2 id="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"><a href="#题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。" class="headerlink" title="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"></a>题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。</h2><p>one_gadget是libc中存在的一些执行execve(“bin&#x2F;sh”,NULL,NULL)的片段，当可以泄露libc地址，并且可以知道libc版本的时候，可以使用此方法来快速控制指令寄存器开始shell。相当于system(“&#x2F;bin&#x2F;sh”)，这种方式更方便，不用控制RDI，RSI，RDX等寄存器。</p>
@@ -17,8 +40,8 @@
         <category>思考</category>
       </categories>
       <tags>
-        <tag>PWN</tag>
         <tag>Binary</tag>
+        <tag>PWN</tag>
       </tags>
   </entry>
   <entry>
@@ -58,31 +81,8 @@
         <category>思考</category>
       </categories>
       <tags>
+        <tag>Binary</tag>
         <tag>PWN</tag>
-        <tag>Binary</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>关于Python3如何实现base64编码解码</title>
-    <url>/2024/04/19/%E5%85%B3%E4%BA%8Epython3%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0base64%E7%BC%96%E7%A0%81%E8%A7%A3%E7%A0%81/</url>
-    <content><![CDATA[<p><img src="https://s2.loli.net/2024/04/19/B2j1kgEqVI8FYbu.png" alt="image-20240419114231543.png"></p>
-<p>AttributeError: ‘bytes’ object has no attribute ‘encode’是：“字节”对象没有属性的编码的意思。</p>
-<p>很明显，是编码格式的问题。</p>
-<p>使用.encode(“base64”)在python3中会报错。b64encode函数的参数为byte类型，而python3中字符都是unicode编码，所以在进行base64编码之前必须先转码。base64生成的编码都是ascii字符。</p>
-<p>解一般的pwn题目的方式。</p>
-<pre class="line-numbers language-python" data-language="python"><code class="language-python">payload_ <span class="token operator">=</span> <span class="token punctuation">(</span>base64<span class="token punctuation">.</span>b64encode<span class="token punctuation">(</span>payload<span class="token punctuation">)</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>源码</p>
-<p><img src="https://s2.loli.net/2024/04/19/SPQ7A8uUGEICTZe.png" alt="image-20240419120225364.png"></p>
-<p>执行结果</p>
-<p><img src="https://s2.loli.net/2024/04/19/pUEQFSbCgWKDiLo.png" alt="image-20240419120244744.png"></p>
-]]></content>
-      <categories>
-        <category>学习</category>
-      </categories>
-      <tags>
-        <tag>Binary</tag>
-        <tag>Python</tag>
       </tags>
   </entry>
   <entry>
@@ -105,8 +105,8 @@ ROPgadget <span class="token parameter variable">--binary</span> vuln <span clas
         <category>学习</category>
       </categories>
       <tags>
-        <tag>PWN</tag>
         <tag>Binary</tag>
+        <tag>PWN</tag>
         <tag>ROP</tag>
       </tags>
   </entry>
