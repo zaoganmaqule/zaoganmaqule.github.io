@@ -1,27 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>关于One_gadget</title>
-    <url>/2024/04/19/%E5%85%B3%E4%BA%8Eone-gadget/</url>
-    <content><![CDATA[<h2 id="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"><a href="#题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。" class="headerlink" title="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"></a>题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。</h2><p>one_gadget是libc中存在的一些执行execve(“bin&#x2F;sh”,NULL,NULL)的片段，当可以泄露libc地址，并且可以知道libc版本的时候，可以使用此方法来快速控制指令寄存器开始shell。相当于system(“&#x2F;bin&#x2F;sh”)，这种方式更方便，不用控制RDI，RSI，RDX等寄存器。</p>
-<p>安装方式</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token parameter variable">-y</span> <span class="token function">install</span> ruby
-<span class="token function">sudo</span> gem <span class="token function">install</span> one_gadget<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>使用方法</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">one_gadget libc.so.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>one_gadget并不总是可以获取shell，它首先要满足一些条件才能执行成功。</p>
-]]></content>
-      <categories>
-        <category>思考</category>
-      </categories>
-      <tags>
-        <tag>PWN</tag>
-        <tag>Binary</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Tcache_attack的学习</title>
     <url>/2024/08/19/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/</url>
     <content><![CDATA[<h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>之前找专业学长买的ctfshow的pwn题目，在学校的时候把栈方面打完了。因为本人是个懒猪所以一拖再拖，也就留到了现在。前面几个heap题目比较简单等我有时间在写。</p>
@@ -230,6 +209,27 @@ io<span class="token punctuation">.</span>interactive<span class="token punctuat
         <tag>tcache</tag>
         <tag>高libc</tag>
         <tag>二进制</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>关于One_gadget</title>
+    <url>/2024/04/19/%E5%85%B3%E4%BA%8Eone-gadget/</url>
+    <content><![CDATA[<h2 id="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"><a href="#题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。" class="headerlink" title="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"></a>题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。</h2><p>one_gadget是libc中存在的一些执行execve(“bin&#x2F;sh”,NULL,NULL)的片段，当可以泄露libc地址，并且可以知道libc版本的时候，可以使用此方法来快速控制指令寄存器开始shell。相当于system(“&#x2F;bin&#x2F;sh”)，这种方式更方便，不用控制RDI，RSI，RDX等寄存器。</p>
+<p>安装方式</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token parameter variable">-y</span> <span class="token function">install</span> ruby
+<span class="token function">sudo</span> gem <span class="token function">install</span> one_gadget<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>使用方法</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">one_gadget libc.so.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>one_gadget并不总是可以获取shell，它首先要满足一些条件才能执行成功。</p>
+]]></content>
+      <categories>
+        <category>思考</category>
+      </categories>
+      <tags>
+        <tag>PWN</tag>
+        <tag>Binary</tag>
       </tags>
   </entry>
   <entry>
