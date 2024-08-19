@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://github.com/images/jxl31y.jpg">
 <meta property="article:published_time" content="2024-08-19T03:21:44.000Z">
-<meta property="article:modified_time" content="2024-08-19T04:10:05.485Z">
+<meta property="article:modified_time" content="2024-08-19T04:16:08.224Z">
 <meta property="article:author" content="da1sy">
 <meta property="article:tag" content="Heap">
 <meta property="article:tag" content="tcache">
@@ -348,7 +348,7 @@ tcache_get <span class="token punctuation">(</span><span class="token class-name
 <p>delete函数，它很干脆没有给我们留下什么有用的</p>
 <p><a target="_blank" rel="noopener" href="https://img.tg/image/OtpDXY"><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/OtpDXY.png" alt="OtpDXY.png"></a></p>
 <p>show函数</p>
-<p><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/QctTw36L4aVlzrA.png" alt="7cfe26f519a849e1833f7f67c46669f0.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/QctTw36L4aVlzrA.png" alt="7cfe26f519a849e1833f7f67c46669f0.png"></p>
 <p>看完全部的逻辑，我们大致也了解了。因为开启了Full RELRO不能修改got表，开启PIE想着能不能泄露libc基地址。这里没有got表了，所以想到hook函数和IO流因为本人对IO不是特别熟悉所以不清楚可以不可以，所以就是用的hook函数，通过泄露main_arena。大致思路就是先申请10个chunk，将tcache给填满（chunk0-5，9），剩下的放到了unsortbins里面（chunk6，8），在重新申请这10个chunk，这样它们的pre_size位全部都填写完成，该如何泄露fd呢？这就需要利用到前面的off-by-one通过chunk7将chunk8的size位的最低inuse位变成0，这样让chunk8误以为前面的chunk都是free的状态，错把前面的chunk6，chunk7进行合并形成一个更大的chunk（size &#x3D; 0x300）</p>
 <h5 id="利用原理"><a href="#利用原理" class="headerlink" title="利用原理"></a>利用原理</h5><p>刚开始</p>
 <p><a target="_blank" rel="noopener" href="https://img.tg/image/OtpEPq"><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/OtpEPq.png" alt="OtpEPq.png"></a></p>
@@ -356,9 +356,9 @@ tcache_get <span class="token punctuation">(</span><span class="token class-name
 <p>在重新申请回来这三个chunk</p>
 <p><a target="_blank" rel="noopener" href="https://img.tg/image/OtpSTr"><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/OtpSTr.png" alt="OtpSTr.png"></a></p>
 <p>此时如果free掉chunk_6，chunk_7,chunk_6的fd就存放在main_arena的地址</p>
-<p><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/Awn3RCVNKWz8MtU.png" alt="7fb5c1bdaaed4bc39505d68ce909a112.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/Awn3RCVNKWz8MtU.png" alt="7fb5c1bdaaed4bc39505d68ce909a112.png"></p>
 <p>在申请回来chunk_7,因为off-by-one,使得0x101的inuse位变成了0。</p>
-<p><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/J1q39uDa2mgWY5z.png" alt="29c60a9f133e4417afa5b299b692a111.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/J1q39uDa2mgWY5z.png" alt="29c60a9f133e4417afa5b299b692a111.png"></p>
 <p>这时候在free掉chunk_8，就会导致chunk_8以为前面都是空闲的chunk，一起合并了。这时候在申请出来chunk_6，main_arena就会改写chunk_7的fd指针，但是呢chunk_7是我们已经申请的内存，在show一下就可以泄露出来libc了。</p>
 <h5 id="exp的流程图"><a href="#exp的流程图" class="headerlink" title="exp的流程图"></a>exp的流程图</h5><p>这些东西说起来容易，想起来还是很费时间的。所以比起文字我想还是用图片来代替比较好于理解。</p>
 <p>申请10个chunk</p>
@@ -370,7 +370,7 @@ tcache_get <span class="token punctuation">(</span><span class="token class-name
 <p>再将其全部申请掉,（为了修改chunk_8的pre_size位为0x200)</p>
 <p><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/OtpfuF.png" alt="OtpfuF.png"></p>
 <p>再free掉0-5位的chunk,free掉8号位置的，free(7)此时chunk_6的fd指针指向main_arena + 0x60</p>
-<p><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/mSAV6HlzhLeCgXv.png" alt="52b45aac21d84ccbbbf90ab26a07fc6a.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/mSAV6HlzhLeCgXv.png" alt="52b45aac21d84ccbbbf90ab26a07fc6a.png"></p>
 <p><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/OtpjPP.png" alt="OtpjPP.png"></p>
 <p>再申请将chunk_7申请回来，再顺序free掉chunk_0和chunk_8,这时候chunk_8向前合并大chunk其size&#x3D;0x300</p>
 <p><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/Otp29b.png" alt="Otp29b.png"></p>
@@ -381,7 +381,7 @@ tcache_get <span class="token punctuation">(</span><span class="token class-name
 <p>再free掉chunk_1,chunk_2来防止报错，再free（9）（0），使其类似于double fastbins那种攻击，</p>
 <p><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/OtpudB.png" alt="OtpudB.png"></p>
 <p>再通过申请两次chunk分别都是chunk_7的内容，达到修改free_hook的内容为one_gadget达到getshell</p>
-<p><img src="/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/Otp3Os.png" alt="Otp3Os.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/Mum5ZyweHQdgUt7.png" alt="2a9b715b6fc2476589257fcb25793d69.png"></p>
 <h5 id="细节"><a href="#细节" class="headerlink" title="细节"></a>细节</h5><p>最后呢，就我个人而言，对于heap题目要注意对齐申请与不对齐申请的不同。如果你想用到下一个chunk的pre_size区域就不对其申请，如exp里面的0xf8。</p>
 <h5 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h5><p>感谢阅读，本人也是小白可以留言。有机会多多交流，谢谢。</p>
 <h5 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h5><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
