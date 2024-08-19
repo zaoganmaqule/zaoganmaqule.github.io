@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://github.com/images/jxl31y.jpg">
 <meta property="article:published_time" content="2024-08-19T03:21:44.000Z">
-<meta property="article:modified_time" content="2024-08-19T04:32:28.725Z">
+<meta property="article:modified_time" content="2024-08-19T06:27:33.087Z">
 <meta property="article:author" content="da1sy">
 <meta property="article:tag" content="Heap">
 <meta property="article:tag" content="tcache">
@@ -337,49 +337,50 @@ tcache_get <span class="token punctuation">(</span><span class="token class-name
 <p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
 <p>这两个函数会在函数 <a target="_blank" rel="noopener" href="https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=blob;f=malloc/malloc.c;h=2527e2504761744df2bdb1abdc02d936ff907ad2;hb=d5c3fafc4307c9b7a4c7d5cb381fcdbfad340bcc#l4173">_int_free</a> 和 <a target="_blank" rel="noopener" href="https://sourceware.org/git/gitweb.cgi?p=glibc.git;a=blob;f=malloc/malloc.c;h=2527e2504761744df2bdb1abdc02d936ff907ad2;hb=d5c3fafc4307c9b7a4c7d5cb381fcdbfad340bcc#l3051">__libc_malloc</a> 的开头被调用，其中 <code>tcache_put</code> 当所请求的分配大小不大于<code>0x408</code>并且当给定大小的 tcache bin 未满时调用。一个 tcache bin 中的最大块数<code>mp_.tcache_count</code>是<code>7</code>。</p>
 <p>从上面可以得到<code>tcache最多可以存放７个chunk。</code></p>
-<h6 id="说这么多不如直接看例题！！！"><a href="#说这么多不如直接看例题！！！" class="headerlink" title="说这么多不如直接看例题！！！"></a>说这么多不如直接看例题！！！</h6><p><a target="_blank" rel="noopener" href="https://img.tg/image/OtpJcx"><img src="/.com//OtpJcx.png" alt="OtpJcx.png"></a></p>
+<h6 id="说这么多不如直接看例题！！！"><a href="#说这么多不如直接看例题！！！" class="headerlink" title="说这么多不如直接看例题！！！"></a>说这么多不如直接看例题！！！</h6><p><img src="https://s2.loli.net/2024/08/19/TkLAMtV3CehQvKs.png" alt="99397f6d2a864f9a993c5d28240239c1.png"></p>
 <p>checksec之后可以看到，修改free_got为system不行了。而且还开启了本人最讨厌的PIE（本人在栈方面面对PIE比较头疼，之后经过学长指点现在可能好点。在此还是感谢我的学长），从保护机制来看肯定要泄露libc基地址。接下来进入ida来看看它的逻辑</p>
 <p>main函数，先申请一个0xb0(这个大小是包含0x10的size和pre_size的，这样与pwndbg对的上，方便观察，望读者见谅）chunk，用来存放一个指针（指向你所申请的chunk的内容）还有一个用来存放你所申请的大小，经典菜单题，没有给后门函数。</p>
-<p><a target="_blank" rel="noopener" href="https://img.tg/image/OtpRMj"><img src="/.com//OtpRMj.png" alt="OtpRMj.png"></a></p>
+<p><img src="https://s2.loli.net/2024/08/19/MCOy6wsHx7dNA9G.png" alt="98064aa85e484d2598aef202a630217e.png"></p>
 <p>add函数（自己命名，对着函数名按N就可以修改），可以看到固定申请得内存大小为0xf8，但是让你输入size不能大于0xf8，其实这个影响不大（基本上ctf它规定你多大基本上你也就申请那么大足够了）逻辑很简单，但是呢！！！看到哪个名字很多aaaaaa的函数了吗？哪个是关键的函数（我也给它修改了名字为了让我自己方便看）</p>
-<p><a target="_blank" rel="noopener" href="https://img.tg/image/Otpt7p"><img src="/.com//Otpt7p.png" alt="Otpt7p.png"></a></p>
+<p><img src="https://s2.loli.net/2024/08/19/OlDnVpF38MhZxty.png" alt="f28b37eb2d0347a88f0b4e4d1b2f216a.png"></p>
 <p>进入aaaaaaaa函数，值得一提的是这个函数第一个参数是前面main函数提到的指针，第二个参数是main函数提到的size。if(a2)感觉很奇怪嘛，仔细看会发现result &#x3D; &amp;a1[a2]这个地方会溢出到下一个，后面<em>result &#x3D; 0正好可以想到off-by-nnull。注意其实就本人而言没必要记录什么int，long类型，其实他们的区别都是存储类型的大小不同，本质对于计算机就是存储的大小不一样，其实你只要会访问内存，就可以用有限个char</em>来表示你所需要的任意长的类型，当时如果你是个专业的程序开发人员，当菜鸡我在放屁，存在机器字长对齐的问题，它会影响性能，下次有机会也可以分析一下。</p>
-<p><a target="_blank" rel="noopener" href="https://img.tg/image/Otp4LU"><img src="/.com//Otp4LU.png" alt="Otp4LU.png"></a></p>
+<p><img src="https://s2.loli.net/2024/08/19/Pg9NFf1HL6VInuz.png" alt="98790afd591b467d8fd6c2c3ef734656.png"></p>
 <p>delete函数，它很干脆没有给我们留下什么有用的</p>
 <p><img src="https://s2.loli.net/2024/08/19/vGEBaoj5V1fSgds.png" alt="48fb782263bc4eadad03156ed8809fd4.png"></p>
 <p>show函数</p>
 <p><img src="https://s2.loli.net/2024/08/19/QctTw36L4aVlzrA.png" alt="7cfe26f519a849e1833f7f67c46669f0.png"></p>
 <p>看完全部的逻辑，我们大致也了解了。因为开启了Full RELRO不能修改got表，开启PIE想着能不能泄露libc基地址。这里没有got表了，所以想到hook函数和IO流因为本人对IO不是特别熟悉所以不清楚可以不可以，所以就是用的hook函数，通过泄露main_arena。大致思路就是先申请10个chunk，将tcache给填满（chunk0-5，9），剩下的放到了unsortbins里面（chunk6，8），在重新申请这10个chunk，这样它们的pre_size位全部都填写完成，该如何泄露fd呢？这就需要利用到前面的off-by-one通过chunk7将chunk8的size位的最低inuse位变成0，这样让chunk8误以为前面的chunk都是free的状态，错把前面的chunk6，chunk7进行合并形成一个更大的chunk（size &#x3D; 0x300）</p>
 <h5 id="利用原理"><a href="#利用原理" class="headerlink" title="利用原理"></a>利用原理</h5><p>刚开始</p>
-<p><a target="_blank" rel="noopener" href="https://img.tg/image/OtpEPq"><img src="/.com//OtpEPq.png" alt="OtpEPq.png"></a></p>
+<p><img src="https://s2.loli.net/2024/08/19/SoZ4zF3nrcpu79w.png" alt="e754e51f76f84d80be03f9c256adf318.png"></p>
 <p>一次一次free后，因为物理内存是连续的所以会合并成一个大的内存块0x300(读者可以想象一下，三个内存块连续存储在一起，本人太赖了不想移动，望读者见谅）</p>
+<p><img src="https://s2.loli.net/2024/08/19/jIhkQP1rsSAOzgy.png" alt="f133ae510ecc4877b3ef4ed25255d52a.png"></p>
 <p>在重新申请回来这三个chunk</p>
-<p><a target="_blank" rel="noopener" href="https://img.tg/image/OtpSTr"><img src="/.com//OtpSTr.png" alt="OtpSTr.png"></a></p>
+<p><img src="https://s2.loli.net/2024/08/19/ZhteDBdQ8sH24Lk.png" alt="c1737e4489714977967a3c89dd95f00b.png"></p>
 <p>此时如果free掉chunk_6，chunk_7,chunk_6的fd就存放在main_arena的地址</p>
-<p><img src="https://s2.loli.net/2024/08/19/Awn3RCVNKWz8MtU.png" alt="7fb5c1bdaaed4bc39505d68ce909a112.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/M6teBn3VFmlRoQk.png" alt="Awn3RCVNKWz8MtU.png"></p>
 <p>在申请回来chunk_7,因为off-by-one,使得0x101的inuse位变成了0。</p>
-<p><img src="https://s2.loli.net/2024/08/19/mkN9rOGEUohMqIn.png" alt="2ea7ca913e097d9cea1d18335329851b.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/rcXoI1Z4HfaxKY2.png" alt="J1q39uDa2mgWY5z.png"></p>
 <p>这时候在free掉chunk_8，就会导致chunk_8以为前面都是空闲的chunk，一起合并了。这时候在申请出来chunk_6，main_arena就会改写chunk_7的fd指针，但是呢chunk_7是我们已经申请的内存，在show一下就可以泄露出来libc了。</p>
 <h5 id="exp的流程图"><a href="#exp的流程图" class="headerlink" title="exp的流程图"></a>exp的流程图</h5><p>这些东西说起来容易，想起来还是很费时间的。所以比起文字我想还是用图片来代替比较好于理解。</p>
 <p>申请10个chunk</p>
-<p><a target="_blank" rel="noopener" href="https://img.tg/image/OtpccG"><img src="/.com//OtpccG.png" alt="OtpccG.png"></a></p>
+<p><img src="https://s2.loli.net/2024/08/19/yLbip4TY9qaM8GQ.png" alt="bcbd6c720f12439091a06d52a68f4258.png"></p>
 <p><img src="https://s2.loli.net/2024/08/19/6ByQicluYatMIdS.png" alt="6d9ff0b2207442a1a23695416fbfad68.png"></p>
 <p> 在分别free掉chunk0-5,chunk9(分开free是为了防止于top chunk合并），free掉chunk6，7，8</p>
-<p><img src="/.com//OtpV7I.png" alt="OtpV7I.png"></p>
-<p><img src="/.com//Mum5ZyweHQdgUt7.png" alt="2a9b715b6fc2476589257fcb25793d69.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/AwZKkfcz86O5uXS.png" alt="d890caac82d44d7287637296a7a8f566.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/oST74nXQ5ihv8YE.png" alt="b319ebbeb2ab470f8004e604f6bf43fd.png"></p>
 <p>再将其全部申请掉,（为了修改chunk_8的pre_size位为0x200)</p>
-<p><img src="/.com//OtpfuF.png" alt="OtpfuF.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/sq1ZuCPyFK9m4gf.png" alt="325df0c36a82471d96734fb3d8c5da03.png"></p>
 <p>再free掉0-5位的chunk,free掉8号位置的，free(7)此时chunk_6的fd指针指向main_arena + 0x60</p>
-<p><img src="https://s2.loli.net/2024/08/19/mSAV6HlzhLeCgXv.png" alt="52b45aac21d84ccbbbf90ab26a07fc6a.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/ty2KUh7PmvELVai.png" alt="mSAV6HlzhLeCgXv.png"></p>
 <p><img src="https://s2.loli.net/2024/08/19/19LJX32KbzHFkaE.png" alt="09dea70c15d344f69264b4f55eb318b5.png"></p>
 <p>再申请将chunk_7申请回来，再顺序free掉chunk_0和chunk_8,这时候chunk_8向前合并大chunk其size&#x3D;0x300</p>
-<p><img src="/.com//Otp29b.png" alt="Otp29b.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/nbJEB2dhcO9mjoi.png" alt="68cc969198ee44c3a372adb6e1e08a29.png"></p>
 <p>再申请8个chunk使得unsortbins修改chunk_7的fd指针为main_arena + 0x60，这时候show（0）就可以泄露出来main_arena + 0x60的值，再通过其来计算得到__malloc_hook，进而算出来libc基地址。后面就是望__free_hook里面写one_gadget。</p>
-<p><img src="/.com//Otp8Tl.png" alt="Otp8Tl.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/VSCsQmLZgEJi6Pr.png" alt="7913c91707994d3bbc75671e2642bd35.png"></p>
 <p>再申请一个chunk得到,可以看到chunk_7有两个</p>
-<p><img src="/.com//OtpXvg.png" alt="OtpXvg.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/4wd7lhDCgNesWvU.png" alt="500360f1a1184d6d9f5135e1a6f091cc.png"></p>
 <p>再free掉chunk_1,chunk_2来防止报错，再free（9）（0），使其类似于double fastbins那种攻击，</p>
-<p><img src="/.com//OtpudB.png" alt="OtpudB.png"></p>
+<p><img src="https://s2.loli.net/2024/08/19/ykaZ8pv7sejfc3N.png" alt="f5c879166d6f4883bc5568589a253c19.png"></p>
 <p>再通过申请两次chunk分别都是chunk_7的内容，达到修改free_hook的内容为one_gadget达到getshell</p>
 <p><img src="https://s2.loli.net/2024/08/19/Mum5ZyweHQdgUt7.png" alt="2a9b715b6fc2476589257fcb25793d69.png"></p>
 <h5 id="细节"><a href="#细节" class="headerlink" title="细节"></a>细节</h5><p>最后呢，就我个人而言，对于heap题目要注意对齐申请与不对齐申请的不同。如果你想用到下一个chunk的pre_size区域就不对其申请，如exp里面的0xf8。</p>
