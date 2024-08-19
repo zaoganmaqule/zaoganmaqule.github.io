@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>关于One_gadget</title>
+    <url>/2024/04/19/%E5%85%B3%E4%BA%8Eone-gadget/</url>
+    <content><![CDATA[<h2 id="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"><a href="#题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。" class="headerlink" title="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"></a>题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。</h2><p>one_gadget是libc中存在的一些执行execve(“bin&#x2F;sh”,NULL,NULL)的片段，当可以泄露libc地址，并且可以知道libc版本的时候，可以使用此方法来快速控制指令寄存器开始shell。相当于system(“&#x2F;bin&#x2F;sh”)，这种方式更方便，不用控制RDI，RSI，RDX等寄存器。</p>
+<p>安装方式</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token parameter variable">-y</span> <span class="token function">install</span> ruby
+<span class="token function">sudo</span> gem <span class="token function">install</span> one_gadget<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>使用方法</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">one_gadget libc.so.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>one_gadget并不总是可以获取shell，它首先要满足一些条件才能执行成功。</p>
+]]></content>
+      <categories>
+        <category>思考</category>
+      </categories>
+      <tags>
+        <tag>PWN</tag>
+        <tag>Binary</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>关于Python3如何实现base64编码解码</title>
     <url>/2024/04/19/%E5%85%B3%E4%BA%8Epython3%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0base64%E7%BC%96%E7%A0%81%E8%A7%A3%E7%A0%81/</url>
     <content><![CDATA[<p><img src="https://s2.loli.net/2024/04/19/B2j1kgEqVI8FYbu.png" alt="image-20240419114231543.png"></p>
@@ -19,29 +40,8 @@
         <category>学习</category>
       </categories>
       <tags>
+        <tag>Binary</tag>
         <tag>Python</tag>
-        <tag>Binary</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>关于One_gadget</title>
-    <url>/2024/04/19/%E5%85%B3%E4%BA%8Eone-gadget/</url>
-    <content><![CDATA[<h2 id="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"><a href="#题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。" class="headerlink" title="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"></a>题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。</h2><p>one_gadget是libc中存在的一些执行execve(“bin&#x2F;sh”,NULL,NULL)的片段，当可以泄露libc地址，并且可以知道libc版本的时候，可以使用此方法来快速控制指令寄存器开始shell。相当于system(“&#x2F;bin&#x2F;sh”)，这种方式更方便，不用控制RDI，RSI，RDX等寄存器。</p>
-<p>安装方式</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token parameter variable">-y</span> <span class="token function">install</span> ruby
-<span class="token function">sudo</span> gem <span class="token function">install</span> one_gadget<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>使用方法</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">one_gadget libc.so.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>one_gadget并不总是可以获取shell，它首先要满足一些条件才能执行成功。</p>
-]]></content>
-      <categories>
-        <category>思考</category>
-      </categories>
-      <tags>
-        <tag>Binary</tag>
-        <tag>PWN</tag>
       </tags>
   </entry>
   <entry>
@@ -81,8 +81,8 @@
         <category>思考</category>
       </categories>
       <tags>
-        <tag>Binary</tag>
         <tag>PWN</tag>
+        <tag>Binary</tag>
       </tags>
   </entry>
   <entry>
@@ -105,8 +105,8 @@ ROPgadget <span class="token parameter variable">--binary</span> vuln <span clas
         <category>学习</category>
       </categories>
       <tags>
-        <tag>Binary</tag>
         <tag>PWN</tag>
+        <tag>Binary</tag>
         <tag>ROP</tag>
       </tags>
   </entry>
