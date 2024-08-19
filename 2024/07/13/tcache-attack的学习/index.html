@@ -28,8 +28,8 @@
 <meta property="og:description" content="no pwn,no fun">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://github.com/images/jxl31y.jpg">
-<meta property="article:published_time" content="2024-08-19T03:21:44.000Z">
-<meta property="article:modified_time" content="2024-08-19T06:29:38.257Z">
+<meta property="article:published_time" content="2024-07-13T00:33:29.000Z">
+<meta property="article:modified_time" content="2024-08-19T08:52:17.457Z">
 <meta property="article:author" content="da1sy">
 <meta property="article:tag" content="Heap">
 <meta property="article:tag" content="tcache">
@@ -39,11 +39,11 @@
 <meta name="twitter:image" content="https://github.com/images/jxl31y.jpg">
 
 
-<link rel="canonical" href="https://example.com/2024/08/19/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/">
+<link rel="canonical" href="https://example.com/2024/07/13/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://example.com/2024/08/19/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/","path":"2024/08/19/tcache-attack的学习/","title":"Tcache_attack的学习"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://example.com/2024/07/13/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/","path":"2024/07/13/tcache-attack的学习/","title":"Tcache_attack的学习"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>Tcache_attack的学习 | DA1SY's Blog</title>
@@ -95,7 +95,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">10</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">9</span></a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">11</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
         </a>
@@ -161,7 +161,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -172,7 +172,7 @@
       </div>
       <div class="site-state-item site-state-tags">
           <a href="/tags/">
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -225,7 +225,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://example.com/2024/08/19/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/">
+    <link itemprop="mainEntityOfPage" href="https://example.com/2024/07/13/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/jxl31y.jpg">
@@ -254,7 +254,7 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2024-08-19 11:21:44" itemprop="dateCreated datePublished" datetime="2024-08-19T11:21:44+08:00">2024-08-19</time>
+      <time title="创建时间：2024-07-13 08:33:29" itemprop="dateCreated datePublished" datetime="2024-07-13T08:33:29+08:00">2024-07-13</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -525,7 +525,7 @@ io<span class="token punctuation">.</span>interactive<span class="token punctuat
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://example.com/2024/08/19/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/" title="Tcache_attack的学习">https://example.com/2024/08/19/tcache-attack的学习/</a>
+      <a href="https://example.com/2024/07/13/tcache-attack%E7%9A%84%E5%AD%A6%E4%B9%A0/" title="Tcache_attack的学习">https://example.com/2024/07/13/tcache-attack的学习/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -549,7 +549,7 @@ io<span class="token punctuation">.</span>interactive<span class="token punctuat
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/08/19/buuctf-pwn%E2%80%94%E2%80%94babyheap-0ctf-2017/" rel="next" title="[BUUCTF]PWN——babyheap_0ctf_2017">
+                <a href="/2024/07/17/buuctf-pwn%E2%80%94%E2%80%94babyheap-0ctf-2017/" rel="next" title="[BUUCTF]PWN——babyheap_0ctf_2017">
                   [BUUCTF]PWN——babyheap_0ctf_2017 <i class="fa fa-angle-right"></i>
                 </a>
             </div>
@@ -583,14 +583,14 @@ io<span class="token punctuation">.</span>interactive<span class="token punctuat
       <i class="fa fa-chart-line"></i>
     </span>
       <span>站点总字数：</span>
-    <span title="站点总字数">18k</span>
+    <span title="站点总字数">31k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span>站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">16 分钟</span>
+    <span title="站点阅读时长">28 分钟</span>
   </span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
