@@ -4,7 +4,8 @@
     <title>Bugku_CTF的pwn题解</title>
     <url>/2024/08/21/bugku-ctf%E7%9A%84pwn%E9%A2%98%E8%A7%A3/</url>
     <content><![CDATA[<blockquote>
-<h5 id="之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下https-ctf-bugku-com"><a href="#之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下https-ctf-bugku-com" class="headerlink" title="之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下https://ctf.bugku.com/"></a>之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下<a href="https://ctf.bugku.com/">https://ctf.bugku.com/</a></h5></blockquote>
+<p>之前了解这平台，好像还是师傅们打AWD。尤其本人没打过，所以不讨论有机会和师傅们一起玩。链接如下<a href="https://ctf.bugku.com/">https://ctf.bugku.com/</a></p>
+</blockquote>
 <h5 id="瑞士军刀"><a href="#瑞士军刀" class="headerlink" title="瑞士军刀"></a>瑞士军刀</h5><p>看名字就知道是nc，直接连。</p>
 <p><img src="https://s2.loli.net/2024/08/21/dv7yEY8jr1tbXM4.png" alt="5bf7dc71f56cc21887b825b604146ad.png"></p>
 <h5 id="repeater"><a href="#repeater" class="headerlink" title="repeater"></a>repeater</h5><p>这题就是简单的fmt+ret2libc，比较坑的是没给你libc。直接泄露栈上的地址，找不到对应的版本，所以就想着泄露puts，但是用到了%s来进行泄露。之后就是简单的修改got表</p>
@@ -69,7 +70,7 @@ exp<span class="token punctuation">(</span><span class="token punctuation">)</sp
 
 io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h4 id="Easy-int"><a href="#Easy-int" class="headerlink" title="Easy_int"></a>Easy_int</h4><p>他的这个保护我看着都比较陌生了。</p>
+<h5 id="Easy-int"><a href="#Easy-int" class="headerlink" title="Easy_int"></a>Easy_int</h5><p>他的这个保护我看着都比较陌生了。</p>
 <p><img src="https://s2.loli.net/2024/08/21/cNJjXLnb45Eoufs.png" alt="1724205279658.png"></p>
 <p>看看源码，上来就是一个知识点题，让你输入一个数NUM，且NUM和-NUM都要是负数。这就是机组的知识了，int表示范围是-2147483648~2147483647，我输入-2147483648的时候，他在数轴的正半轴没有对应的数，所以还是负数。</p>
 <p><img src="https://s2.loli.net/2024/08/21/1rItJnXQ6gN7p3D.png" alt="1724205471521.png"></p>
@@ -145,7 +146,7 @@ exp<span class="token punctuation">(</span><span class="token punctuation">)</sp
 
 io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<h4 id="Baby-heap1"><a href="#Baby-heap1" class="headerlink" title="Baby-heap1"></a>Baby-heap1</h4><p>这题终于能让我涨点金币了。😀我用的版本是2.23-0ubuntu11.3_amd64，打通了。</p>
+<h5 id="Baby-heap1"><a href="#Baby-heap1" class="headerlink" title="Baby-heap1"></a>Baby-heap1</h5><p>这题终于能让我涨点金币了。😀我用的版本是2.23-0ubuntu11.3_amd64，打通了。</p>
 <p>检查保护全开</p>
 <p><img src="https://s2.loli.net/2024/08/21/8KRmGhqvZ6J2s9o.png" alt="1724209732373.png"></p>
 <p>ida打开逐渐分析发现漏洞点应该是堆溢出</p>
@@ -356,7 +357,7 @@ p<span class="token punctuation">.</span>interactive<span class="token punctuati
 
 <p>至于他为什么一个字节一个字节该是因为这两个的地址几乎不一样。所以我感觉很鸡肋。</p>
 <p><img src="https://s2.loli.net/2024/08/21/mnkhaOW2o8JAlxr.png" alt="83a94331d7407a047f0484393068af91.png"></p>
-<h4 id="Baby-heap2"><a href="#Baby-heap2" class="headerlink" title="Baby-heap2"></a>Baby-heap2</h4><p>这题就有意思了，题目给的描述是2.31结果下面都说是2.27。然后我用2.27得到的libc_base才是正确的，但是远程也是打不通的。本地都通了。</p>
+<h5 id="Baby-heap2"><a href="#Baby-heap2" class="headerlink" title="Baby-heap2"></a>Baby-heap2</h5><p>这题就有意思了，题目给的描述是2.31结果下面都说是2.27。然后我用2.27得到的libc_base才是正确的，但是远程也是打不通的。本地都通了。</p>
 <p>这题和之前哪一题逻辑一样，只不过不是堆溢出了，改成了uaf。把tcache填满，在申请一个0x80的chunk，放到unsortedbin里面就可以泄露出来信息（uaf）。之后就是正常，当时远程打不通，我以为是我的方法问题用了两种方法一个是该free_hook还有一个是用realloc调节栈帧之后oog。本地都通了。以下是我用的libc，也是远程环境的。</p>
 <p><img src="https://s2.loli.net/2024/08/21/t8PMmn4IEq53wKp.png" alt="13c3d7435fd96f2a43a5055770c0fae9.png"></p>
 <pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token comment">#用realloc调节栈帧之后oog</span>
@@ -514,7 +515,7 @@ exp<span class="token punctuation">(</span><span class="token punctuation">)</sp
 io<span class="token punctuation">.</span>interactive<span class="token punctuation">(</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p><img src="https://s2.loli.net/2024/08/21/PjS1LGHmAu3DqJV.png" alt="736948c0d7c84396d1be5d72195a6809.png"></p>
-<h4 id="simple-storm"><a href="#simple-storm" class="headerlink" title="simple_storm"></a>simple_storm</h4><blockquote>
+<h5 id="simple-storm"><a href="#simple-storm" class="headerlink" title="simple_storm"></a>simple_storm</h5><blockquote>
 <p>其实我想起来打这个靶场，还是在学习house of storm的时候。看到了这个地方有这个题。所以就给它打了。</p>
 </blockquote>
 <p>这题顾名思义，肯定用house of storm来打。</p>
@@ -2188,6 +2189,27 @@ io<span class="token punctuation">.</span>interactive<span class="token punctuat
       </tags>
   </entry>
   <entry>
+    <title>关于One_gadget</title>
+    <url>/2024/04/19/%E5%85%B3%E4%BA%8Eone-gadget/</url>
+    <content><![CDATA[<h2 id="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"><a href="#题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。" class="headerlink" title="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"></a>题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。</h2><p>one_gadget是libc中存在的一些执行execve(“bin&#x2F;sh”,NULL,NULL)的片段，当可以泄露libc地址，并且可以知道libc版本的时候，可以使用此方法来快速控制指令寄存器开始shell。相当于system(“&#x2F;bin&#x2F;sh”)，这种方式更方便，不用控制RDI，RSI，RDX等寄存器。</p>
+<p>安装方式</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token parameter variable">-y</span> <span class="token function">install</span> ruby
+<span class="token function">sudo</span> gem <span class="token function">install</span> one_gadget<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>使用方法</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">one_gadget libc.so.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>one_gadget并不总是可以获取shell，它首先要满足一些条件才能执行成功。</p>
+]]></content>
+      <categories>
+        <category>思考</category>
+      </categories>
+      <tags>
+        <tag>PWN</tag>
+        <tag>Binary</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>关于Python3如何实现base64编码解码</title>
     <url>/2024/04/19/%E5%85%B3%E4%BA%8Epython3%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0base64%E7%BC%96%E7%A0%81%E8%A7%A3%E7%A0%81/</url>
     <content><![CDATA[<p><img src="https://s2.loli.net/2024/04/19/B2j1kgEqVI8FYbu.png" alt="image-20240419114231543.png"></p>
@@ -2208,27 +2230,6 @@ io<span class="token punctuation">.</span>interactive<span class="token punctuat
       <tags>
         <tag>Binary</tag>
         <tag>Python</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>关于One_gadget</title>
-    <url>/2024/04/19/%E5%85%B3%E4%BA%8Eone-gadget/</url>
-    <content><![CDATA[<h2 id="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"><a href="#题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。" class="headerlink" title="题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。"></a>题目描述存在用户输入获取函数指针，并通过函数指针调用相应的函数。需要注意的是，这种通过用户输入来获取函数指针并调用函数的做法极其危险。</h2><p>one_gadget是libc中存在的一些执行execve(“bin&#x2F;sh”,NULL,NULL)的片段，当可以泄露libc地址，并且可以知道libc版本的时候，可以使用此方法来快速控制指令寄存器开始shell。相当于system(“&#x2F;bin&#x2F;sh”)，这种方式更方便，不用控制RDI，RSI，RDX等寄存器。</p>
-<p>安装方式</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">apt</span> <span class="token parameter variable">-y</span> <span class="token function">install</span> ruby
-<span class="token function">sudo</span> gem <span class="token function">install</span> one_gadget<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>使用方法</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">one_gadget libc.so.6<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>one_gadget并不总是可以获取shell，它首先要满足一些条件才能执行成功。</p>
-]]></content>
-      <categories>
-        <category>思考</category>
-      </categories>
-      <tags>
-        <tag>PWN</tag>
-        <tag>Binary</tag>
       </tags>
   </entry>
   <entry>
